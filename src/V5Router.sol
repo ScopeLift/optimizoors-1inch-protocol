@@ -57,6 +57,8 @@ contract V5Router is AggregationBaseRouter {
             bytes memory data,
             bool flags
         ) = abi.decode(msg.data, (address, uint256, uint256, bytes, bool));
+        IERC20(TOKEN).transferFrom(msg.sender, address(this), amount);
+        IERC20(TOKEN).approve(address(AGGREGATION_ROUTER), amount);
         AGGREGATION_ROUTER.swap(
             AGGREGATION_EXECUTOR,
             IAggregationRouter.SwapDescription({

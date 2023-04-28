@@ -1,19 +1,19 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-import {IV5AggregationExecutor} from "src/interfaces/IV5AggregationExecutor.sol";
-import {IV5AggregationRouter} from "src/interfaces/IV5AggregationRouter.sol";
 import {IERC20} from "openzeppelin-contracts/contracts/token/ERC20/IERC20.sol";
-import {AggregationV5BaseRouter} from "src/AggregationBaseRouter.sol";
+import {IV4AggregationExecutor} from "src/interfaces/IV4AggregationExecutor.sol";
+import {IV4AggregationRouter} from "src/interfaces/IV4AggregationRouter.sol";
+import {AggregationV4BaseRouter} from "src/AggregationBaseRouter.sol";
 
-contract V5Router is AggregationV5BaseRouter {
+contract V4Router is AggregationV4BaseRouter {
     constructor(
-        IV5AggregationRouter aggregationRouter,
-        IV5AggregationExecutor aggregationExecutor,
+        IV4AggregationRouter aggregationRouter,
+        IV4AggregationExecutor aggregationExecutor,
         address token,
         address sourceReceiver
     )
-        AggregationV5BaseRouter(
+        AggregationV4BaseRouter(
             aggregationExecutor,
             aggregationRouter,
             token,
@@ -38,16 +38,16 @@ contract V5Router is AggregationV5BaseRouter {
         IERC20(TOKEN).approve(address(AGGREGATION_ROUTER), amount);
         AGGREGATION_ROUTER.swap(
             AGGREGATION_EXECUTOR,
-            IV5AggregationRouter.SwapDescription({
+            IV4AggregationRouter.SwapDescription({
                 srcToken: IERC20(TOKEN),
                 dstToken: IERC20(dstToken),
                 srcReceiver: payable(SOURCE_RECEIVER),
                 dstReceiver: payable(msg.sender),
                 amount: amount,
                 minReturnAmount: minReturnAmount,
-                flags: flags ? 1 : 0
+                flags: flags ? 1 : 0,
+                permit: ""
             }),
-            "",
             data
         );
     }

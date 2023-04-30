@@ -29,10 +29,6 @@ contract V5RouterForkTestBase is Test, OneInchContracts {
 }
 
 contract V5RouterForkTest is V5RouterForkTestBase {
-    function returnSlice(bytes calldata d) public pure returns (bytes memory) {
-        return d[4:];
-    }
-
     function nativeSwap(
         IV5AggregationRouter.SwapDescription memory desc,
         bytes memory permit,
@@ -56,7 +52,7 @@ contract V5RouterForkTest is V5RouterForkTestBase {
             bytes memory permit,
             bytes memory data
         ) = abi.decode(
-                this.returnSlice(dataParams),
+                this.returnSliceBytes(dataParams),
                 (address, IV5AggregationRouter.SwapDescription, bytes, bytes)
             );
 

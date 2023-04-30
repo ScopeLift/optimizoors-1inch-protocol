@@ -29,10 +29,6 @@ contract V4RouterForkTestBase is Test, OneInchContracts {
 }
 
 contract V4RouterForkTest is V4RouterForkTestBase {
-    function returnSlice(bytes calldata d) public pure returns (bytes memory) {
-        return d[4:];
-    }
-
     function nativeSwap(
         IV4AggregationRouter.SwapDescription memory desc,
         bytes memory data,
@@ -54,7 +50,7 @@ contract V4RouterForkTest is V4RouterForkTestBase {
             IV4AggregationRouter.SwapDescription memory desc,
             bytes memory data
         ) = abi.decode(
-                this.returnSlice(dataParams),
+                this.returnSliceBytes(dataParams),
                 (address, IV4AggregationRouter.SwapDescription, bytes)
             );
 

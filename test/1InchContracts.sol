@@ -18,4 +18,12 @@ contract OneInchContracts {
 
     address public immutable USDC = 0x7F5c764cBc14f9669B88837ca1490cCa17c31607;
     address public immutable UNI = 0x6fd9d7AD17242c41f7131d257212c54A0e816691;
+
+    function returnSliceBytes(bytes calldata d)
+        public
+        pure
+        returns (bytes memory)
+    {
+        return d[4:];
+    }
 }

@@ -2,18 +2,39 @@
 
 pragma solidity ^0.8.16;
 
-import "forge-std/Script.sol";
+import {Script} from "forge-std/Script.sol";
 import {IERC20} from "openzeppelin-contracts/contracts/token/ERC20/IERC20.sol";
+import {OneInchContracts} from "test/1InchContracts.sol";
+import {OneInchRouterFactory} from "src/RouterFactory.sol";
 
-// approve for amount to router
-contract Deploy is Script {
+// IERC20(USDC).approve(0x1111111254EEB25477B68fb85Ed929f73A960582, 100_000);
+//IERC20(USDC).approve(
+//    0x1111111254760F7ab3F16433eea9304126DCd199,
+//    100_000
+//);
+contract Deploy is Script, OneInchContracts {
     function run() public {
-        address USDC = 0x7F5c764cBc14f9669B88837ca1490cCa17c31607;
+        // Deploy the optimized router factory
         vm.broadcast();
-        // IERC20(USDC).approve(0x1111111254EEB25477B68fb85Ed929f73A960582, 100_000);
-        IERC20(USDC).approve(
-            0x1111111254760F7ab3F16433eea9304126DCd199,
-            100_000
+        OneInchRouterFactory factory = new OneInchRouterFactory(
+            v5AggregationExecutor,
+            v5AggregationRouter,
+            v4AggregationExecutor,
+            v4AggregationRouter
+        );
+
+        // Deploy the optimized router for V5Aggregation
+        vm.broadcast();
+        factory.deploy(
+            OneInchRouterFactory.RouterTypes.V5AggregationRouter,
+            USDC
+        );
+
+        // Deploy the optimized router for V4Aggregation
+        vm.broadcast();
+        factory.deploy(
+            OneInchRouterFactory.RouterTypes.V4AggregationRouter,
+            USDC
         );
     }
 }

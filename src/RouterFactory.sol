@@ -3,40 +3,111 @@ pragma solidity >=0.8.0;
 
 import {IV5AggregationExecutor} from "src/interfaces/IV5AggregationExecutor.sol";
 import {IV5AggregationRouter} from "src/interfaces/IV5AggregationRouter.sol";
+import {IV4AggregationExecutor} from "src/interfaces/IV4AggregationExecutor.sol";
+import {IV4AggregationRouter} from "src/interfaces/IV4AggregationRouter.sol";
 import {Create2} from "src/lib/Create2.sol";
 import {V5Router} from "src/V5Router.sol";
+import {V4Router} from "src/V4Router.sol";
 
 contract OneInchRouterFactory {
-    IV5AggregationExecutor public immutable AGGREGATION_EXECUTOR;
-    IV5AggregationRouter public immutable V5_AGGREGATION_ROUTER;
-    address public immutable SOURCE_RECEIVER;
+    error RouterTypeDoesNotExist();
 
-    event RouterDeployed(address indexed asset);
-
-    constructor(
-        IV5AggregationExecutor aggregationExecutor,
-        IV5AggregationRouter v5AggregationRouter
-    ) {
-        AGGREGATION_EXECUTOR = aggregationExecutor;
-        V5_AGGREGATION_ROUTER = v5AggregationRouter;
-        SOURCE_RECEIVER = address(aggregationExecutor);
+    enum RouterTypes {
+        V4AggregationRouter,
+        V5AggregationRouter
     }
 
-    function deploy(address asset) external returns (address) {
+    IV5AggregationExecutor public immutable V5_AGGREGATION_EXECUTOR;
+    IV5AggregationRouter public immutable V5_AGGREGATION_ROUTER;
+    IV4AggregationExecutor public immutable V4_AGGREGATION_EXECUTOR;
+    IV4AggregationRouter public immutable V4_AGGREGATION_ROUTER;
+    address public immutable V5_SOURCE_RECEIVER;
+    address public immutable V4_SOURCE_RECEIVER;
+
+    event RouterDeployed(RouterTypes type_, address indexed asset);
+
+    // Add V4 params
+    constructor(
+        IV5AggregationExecutor v5AggregationExecutor,
+        IV5AggregationRouter v5AggregationRouter,
+        IV4AggregationExecutor v4AggregationExecutor,
+        IV4AggregationRouter v4AggregationRouter
+    ) {
+        V5_AGGREGATION_EXECUTOR = v5AggregationExecutor;
+        V5_AGGREGATION_ROUTER = v5AggregationRouter;
+        V5_SOURCE_RECEIVER = address(v5AggregationExecutor);
+        V4_AGGREGATION_EXECUTOR = v4AggregationExecutor;
+        V4_AGGREGATION_ROUTER = v4AggregationRouter;
+        V4_SOURCE_RECEIVER = address(v4AggregationExecutor);
+    }
+
+    function deploy(RouterTypes type_, address asset)
+        external
+        returns (address)
+    {
         bytes32 salt = _salt(asset);
-        address router = address(
-            new V5Router{salt: salt}(
-                V5_AGGREGATION_ROUTER,
-                AGGREGATION_EXECUTOR,
-                asset,
-                SOURCE_RECEIVER
-            )
-        );
-        emit RouterDeployed(router);
+        address router;
+        if (type_ == RouterTypes.V5AggregationRouter) {
+            router = address(
+                new V5Router{salt: salt}(
+                    V5_AGGREGATION_ROUTER,
+                    V5_AGGREGATION_EXECUTOR,
+                    asset,
+                    V5_SOURCE_RECEIVER
+                )
+            );
+        } else if (type_ == RouterTypes.V4AggregationRouter) {
+            router = address(
+                new V4Router{salt: salt}(
+                    V4_AGGREGATION_ROUTER,
+                    V4_AGGREGATION_EXECUTOR,
+                    asset,
+                    V4_SOURCE_RECEIVER
+                )
+            );
+        } else {
+            revert RouterTypeDoesNotExist();
+        }
+        emit RouterDeployed(type_, asset);
         return router;
     }
 
-    function computeAddress(address asset) external view returns (address) {
+    function computeAddress(RouterTypes type_, address asset)
+        external
+        view
+        returns (address)
+    {
+        if (type_ == RouterTypes.V4AggregationRouter)
+            return _computeV4AggregationRouterAddress(asset);
+        else if (type_ == RouterTypes.V5AggregationRouter)
+            return _computeV5AggregationRouterAddress(asset);
+        else revert RouterTypeDoesNotExist();
+    }
+
+    function _computeV4AggregationRouterAddress(address asset)
+        internal
+        view
+        returns (address)
+    {
+        return
+            Create2.computeCreate2Address(
+                _salt(asset),
+                address(this),
+                type(V4Router).creationCode,
+                abi.encode(
+                    V4_AGGREGATION_ROUTER,
+                    V4_AGGREGATION_EXECUTOR,
+                    asset,
+                    V4_SOURCE_RECEIVER
+                )
+            );
+    }
+
+    function _computeV5AggregationRouterAddress(address asset)
+        internal
+        view
+        returns (address)
+    {
         return
             Create2.computeCreate2Address(
                 _salt(asset),
@@ -44,9 +115,9 @@ contract OneInchRouterFactory {
                 type(V5Router).creationCode,
                 abi.encode(
                     V5_AGGREGATION_ROUTER,
-                    AGGREGATION_EXECUTOR,
+                    V5_AGGREGATION_EXECUTOR,
                     asset,
-                    SOURCE_RECEIVER
+                    V5_SOURCE_RECEIVER
                 )
             );
     }

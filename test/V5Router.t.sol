@@ -14,10 +14,15 @@ contract V5RouterForkTestBase is Test, OneInchContracts {
     function setUp() public {
         vm.createSelectFork(vm.rpcUrl("optimism"), 94_524_034);
         factory = new OneInchRouterFactory(
-            aggregationExecutor,
-            aggregationRouter
+            v5AggregationExecutor,
+            v5AggregationRouter,
+            v4AggregationExecutor,
+            v4AggregationRouter
         );
-        factory.deploy(USDC);
+        factory.deploy(
+            OneInchRouterFactory.RouterTypes.V5AggregationRouter,
+            USDC
+        );
         deal(USDC, address(this), 100_000_000);
         addr = 0xEAC5F0d4A9a45E1f9FdD0e7e2882e9f60E301156;
     }
@@ -35,7 +40,7 @@ contract V5RouterForkTest is V5RouterForkTestBase {
         uint256 snapshotId
     ) public returns (uint256) {
         vm.revertTo(snapshotId);
-        aggregationRouter.swap(aggregationExecutor, desc, permit, data);
+        v5AggregationRouter.swap(v5AggregationExecutor, desc, permit, data);
         return IERC20(UNI).balanceOf(addr);
     }
 
@@ -57,7 +62,10 @@ contract V5RouterForkTest is V5RouterForkTestBase {
 
         // Setup optimized router call
         vm.startPrank(0xEAC5F0d4A9a45E1f9FdD0e7e2882e9f60E301156);
-        address routerAddr = factory.computeAddress(USDC);
+        address routerAddr = factory.computeAddress(
+            OneInchRouterFactory.RouterTypes.V5AggregationRouter,
+            USDC
+        );
         IERC20(USDC).approve(routerAddr, 100_000);
         uint256 startingBalance = IERC20(UNI).balanceOf(addr);
         assertTrue(startingBalance == 0);

@@ -13,28 +13,22 @@ import {OneInchRouterFactory} from "src/RouterFactory.sol";
 //    100_000
 //);
 contract Deploy is Script, OneInchContracts {
-    function run() public {
-        // Deploy the optimized router factory
-        vm.broadcast();
-        OneInchRouterFactory factory = new OneInchRouterFactory(
+  function run() public {
+    // Deploy the optimized router factory
+    vm.broadcast();
+    OneInchRouterFactory factory = new OneInchRouterFactory(
             v5AggregationExecutor,
             v5AggregationRouter,
             v4AggregationExecutor,
             v4AggregationRouter
         );
 
-        // Deploy the optimized router for V5Aggregation
-        vm.broadcast();
-        factory.deploy(
-            OneInchRouterFactory.RouterTypes.V5AggregationRouter,
-            USDC
-        );
+    // Deploy the optimized router for V5Aggregation
+    vm.broadcast();
+    factory.deploy(OneInchRouterFactory.RouterTypes.V5AggregationRouter, USDC);
 
-        // Deploy the optimized router for V4Aggregation
-        vm.broadcast();
-        factory.deploy(
-            OneInchRouterFactory.RouterTypes.V4AggregationRouter,
-            USDC
-        );
-    }
+    // Deploy the optimized router for V4Aggregation
+    vm.broadcast();
+    factory.deploy(OneInchRouterFactory.RouterTypes.V4AggregationRouter, USDC);
+  }
 }

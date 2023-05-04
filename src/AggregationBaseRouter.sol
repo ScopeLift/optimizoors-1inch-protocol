@@ -43,7 +43,7 @@ abstract contract AggregationV4BaseRouter {
   /// @notice The 1inch contract with the unoptimized route
   IV4AggregationRouter public immutable AGGREGATION_ROUTER;
 
-  /// @notice The token being from a user to be swapped
+  /// @notice The input token being swapped
   address public immutable TOKEN;
 
   /// @notice Where the tokens are going in the router and it should match the executor

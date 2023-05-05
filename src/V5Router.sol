@@ -24,8 +24,8 @@ contract V5Router is AggregationV5BaseRouter {
   // the flags match specific constant masks. there is no documentation on these, and there seems to
   // be no specific logic on them
   fallback() external payable {
-    (address dstToken, uint256 amount, uint256 minReturnAmount, bytes memory data, bool flags) =
-      abi.decode(msg.data, (address, uint256, uint256, bytes, bool));
+    (address dstToken, uint256 amount, uint256 minReturnAmount, bytes memory data, uint256 flags) =
+      abi.decode(msg.data, (address, uint256, uint256, bytes, uint256));
     IERC20(TOKEN).transferFrom(msg.sender, address(this), amount);
     IERC20(TOKEN).approve(address(AGGREGATION_ROUTER), amount);
     AGGREGATION_ROUTER.swap(
@@ -37,7 +37,7 @@ contract V5Router is AggregationV5BaseRouter {
         dstReceiver: payable(msg.sender),
         amount: amount,
         minReturnAmount: minReturnAmount,
-        flags: flags ? 1 : 0
+        flags: flags
       }),
       "",
       data

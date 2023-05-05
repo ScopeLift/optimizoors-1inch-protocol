@@ -59,8 +59,7 @@ contract V5RouterForkTest is V5RouterForkTestBase {
     assertTrue(startingBalance == 0);
 
     // Opitmized router call
-    (bool ok,) =
-      payable(routerAddr).call(abi.encode(UNI, 100_000, desc.minReturnAmount, data, false));
+    (bool ok,) = payable(routerAddr).call(abi.encode(UNI, 100_000, desc.minReturnAmount, data, 0));
 
     assertTrue(ok);
 

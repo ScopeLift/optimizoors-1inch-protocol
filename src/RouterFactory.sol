@@ -13,7 +13,7 @@ import {V4Router} from "src/V4Router.sol";
 contract OneInchRouterFactory {
   error RouterTypeDoesNotExist();
 
-  enum RouterTypes {
+  enum RouterType {
     V4AggregationRouter,
     V5AggregationRouter
   }
@@ -39,7 +39,7 @@ contract OneInchRouterFactory {
   /// This will match the V4_AGGREGATION_EXECUTOR address.
   address public immutable V4_SOURCE_RECEIVER;
 
-  event RouterDeployed(RouterTypes type_, address indexed asset);
+  event RouterDeployed(RouterType type_, address indexed asset);
 
   constructor(
     IV5AggregationExecutor v5AggregationExecutor,
@@ -55,10 +55,10 @@ contract OneInchRouterFactory {
     V4_SOURCE_RECEIVER = address(v4AggregationExecutor);
   }
 
-  function deploy(RouterTypes type_, address asset) external returns (address) {
+  function deploy(RouterType type_, address asset) external returns (address) {
     bytes32 salt = _salt(asset);
     address router;
-    if (type_ == RouterTypes.V5AggregationRouter) {
+    if (type_ == RouterType.V5AggregationRouter) {
       router = address(
         new V5Router{salt: salt}(
                     V5_AGGREGATION_ROUTER,
@@ -67,7 +67,7 @@ contract OneInchRouterFactory {
                     V5_SOURCE_RECEIVER
                 )
       );
-    } else if (type_ == RouterTypes.V4AggregationRouter) {
+    } else if (type_ == RouterType.V4AggregationRouter) {
       router = address(
         new V4Router{salt: salt}(
                     V4_AGGREGATION_ROUTER,
@@ -83,10 +83,10 @@ contract OneInchRouterFactory {
     return router;
   }
 
-  function computeAddress(RouterTypes type_, address asset) external view returns (address) {
-    if (type_ == RouterTypes.V4AggregationRouter) {
+  function computeAddress(RouterType type_, address asset) external view returns (address) {
+    if (type_ == RouterType.V4AggregationRouter) {
       return _computeV4AggregationRouterAddress(asset);
-    } else if (type_ == RouterTypes.V5AggregationRouter) {
+    } else if (type_ == RouterType.V5AggregationRouter) {
       return _computeV5AggregationRouterAddress(asset);
     } else {
       revert RouterTypeDoesNotExist();

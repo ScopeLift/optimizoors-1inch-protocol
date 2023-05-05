@@ -20,7 +20,7 @@ contract V5RouterForkTestBase is Test, OneInchContracts {
             v4AggregationExecutor,
             v4AggregationRouter
         );
-    factory.deploy(OneInchRouterFactory.RouterTypes.V5AggregationRouter, USDC);
+    factory.deploy(OneInchRouterFactory.RouterType.V5AggregationRouter, USDC);
     deal(USDC, address(this), 100_000_000);
     addr = 0xEAC5F0d4A9a45E1f9FdD0e7e2882e9f60E301156;
   }
@@ -53,7 +53,7 @@ contract V5RouterForkTest is V5RouterForkTestBase {
     // Setup optimized router call
     vm.startPrank(0xEAC5F0d4A9a45E1f9FdD0e7e2882e9f60E301156);
     address routerAddr =
-      factory.computeAddress(OneInchRouterFactory.RouterTypes.V5AggregationRouter, USDC);
+      factory.computeAddress(OneInchRouterFactory.RouterType.V5AggregationRouter, USDC);
     IERC20(USDC).approve(routerAddr, 100_000);
     uint256 startingBalance = IERC20(UNI).balanceOf(addr);
     assertTrue(startingBalance == 0);

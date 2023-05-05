@@ -20,10 +20,10 @@ contract Deploy is Script, OneInchContracts {
 
     // Deploy the optimized router for V5Aggregation
     vm.broadcast();
-    factory.deploy(OneInchRouterFactory.RouterTypes.V5AggregationRouter, USDC);
+    factory.deploy(OneInchRouterFactory.RouterType.V5AggregationRouter, USDC);
 
     // Deploy the optimized router for V4Aggregation
     vm.broadcast();
-    factory.deploy(OneInchRouterFactory.RouterTypes.V4AggregationRouter, USDC);
+    factory.deploy(OneInchRouterFactory.RouterType.V4AggregationRouter, USDC);
   }
 }

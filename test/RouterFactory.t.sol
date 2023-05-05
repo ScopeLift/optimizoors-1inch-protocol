@@ -15,10 +15,10 @@ contract RouterFactoryTest is Test, OneInchContracts {
             v4AggregationExecutor,
             v4AggregationRouter
         );
-    address V5Router = factory.deploy(OneInchRouterFactory.RouterTypes.V5AggregationRouter, USDC);
+    address V5Router = factory.deploy(OneInchRouterFactory.RouterType.V5AggregationRouter, USDC);
     assertEq(
       V5Router,
-      factory.computeAddress(OneInchRouterFactory.RouterTypes.V5AggregationRouter, USDC),
+      factory.computeAddress(OneInchRouterFactory.RouterType.V5AggregationRouter, USDC),
       "V5Router address should be correct"
     );
   }
@@ -30,10 +30,10 @@ contract RouterFactoryTest is Test, OneInchContracts {
             v4AggregationExecutor,
             v4AggregationRouter
         );
-    address V4Router = factory.deploy(OneInchRouterFactory.RouterTypes.V4AggregationRouter, USDC);
+    address V4Router = factory.deploy(OneInchRouterFactory.RouterType.V4AggregationRouter, USDC);
     assertEq(
       V4Router,
-      factory.computeAddress(OneInchRouterFactory.RouterTypes.V4AggregationRouter, USDC),
+      factory.computeAddress(OneInchRouterFactory.RouterType.V4AggregationRouter, USDC),
       "V4Router address should be correct"
     );
   }

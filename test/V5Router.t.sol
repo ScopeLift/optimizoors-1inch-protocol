@@ -58,7 +58,7 @@ contract V5RouterForkTest is V5RouterForkTestBase {
     uint256 startingBalance = IERC20(UNI).balanceOf(addr);
     assertTrue(startingBalance == 0);
 
-    // Opitmized router call
+    // Optimized router call
     (bool ok,) = payable(routerAddr).call(abi.encode(UNI, 100_000, desc.minReturnAmount, data, 0));
 
     assertTrue(ok);

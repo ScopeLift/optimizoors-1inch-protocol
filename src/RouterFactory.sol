@@ -9,7 +9,7 @@ import {Create2} from "src/lib/Create2.sol";
 import {V5Router} from "src/V5Router.sol";
 import {V4Router} from "src/V4Router.sol";
 
-/// @notice a factory for deploying a router for a given asset and router type
+/// @notice A factory for deploying an optimized router for a given asset and router type.
 contract OneInchRouterFactory {
   error RouterTypeDoesNotExist();
 
@@ -18,27 +18,29 @@ contract OneInchRouterFactory {
     V5AggregationRouter
   }
 
-  /// @notice The v5 contract used to execute the swap along an optimized path
+  /// @notice The 1inch v5 contract used to execute the swap along an optimized token swapping path.
   IV5AggregationExecutor public immutable V5_AGGREGATION_EXECUTOR;
 
-  /// @notice The v5 1inch contract with the unoptimized route
+  /// @notice The 1inch v5 aggregation router contract.
   IV5AggregationRouter public immutable V5_AGGREGATION_ROUTER;
 
-  /// @notice The v4 contract used to execute the swap along an optimized path
+  /// @notice The 1inch v4 aggregation router contract used to execute the swap along an optimized
+  /// token swapping path.
   IV4AggregationExecutor public immutable V4_AGGREGATION_EXECUTOR;
 
-  /// @notice The v4 1inch contract with the unoptimized route
+  /// @notice The 1inch v4 aggregation router contract.
   IV4AggregationRouter public immutable V4_AGGREGATION_ROUTER;
 
-  /// @notice Where the tokens are going in the v5 router and it should match the executor
+  /// @notice The address the 1inch v5 aggregation router will send the the input tokens.
+  /// This will match the V5_AGGREGATION_EXECUTOR address.
   address public immutable V5_SOURCE_RECEIVER;
 
-  /// @notice Where the tokens are going in the v4 router and it should match the executor
+  /// @notice The address the 1inch v4 aggregation router will send the the input tokens.
+  /// This will match the V4_AGGREGATION_EXECUTOR address.
   address public immutable V4_SOURCE_RECEIVER;
 
   event RouterDeployed(RouterTypes type_, address indexed asset);
 
-  // Add V4 params
   constructor(
     IV5AggregationExecutor v5AggregationExecutor,
     IV5AggregationRouter v5AggregationRouter,

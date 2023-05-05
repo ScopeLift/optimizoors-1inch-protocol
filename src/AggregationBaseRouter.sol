@@ -34,19 +34,20 @@ abstract contract AggregationV5BaseRouter {
   }
 }
 
-/// @notice An abstract class with the necessary class variables to make a aggregation v4 optimized
-/// router
+/// @notice An abstract class with the necessary class variables
+/// to make a 1inch v4 aggregation router optimized.
 abstract contract AggregationV4BaseRouter {
-  /// @notice The contract used to execute the swap along an optimized path
+  /// @notice The contract used to execute the swap along an optimized path.
   IV4AggregationExecutor public immutable AGGREGATION_EXECUTOR;
 
-  /// @notice The 1inch contract with the unoptimized route
+  /// @notice The 1inch v4 aggregation router contract.
   IV4AggregationRouter public immutable AGGREGATION_ROUTER;
 
-  /// @notice The input token being swapped
+  /// @notice The input token being swapped.
   address public immutable TOKEN;
 
-  /// @notice Where the tokens are going in the router and it should match the executor
+  /// @notice Where the tokens are transferred in the 1inch v4 aggregation router.
+  /// It will match the AGGREGATION_EXECUTOR address.
   address public immutable SOURCE_RECEIVER;
 
   constructor(

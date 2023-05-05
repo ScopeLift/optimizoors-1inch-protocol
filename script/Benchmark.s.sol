@@ -54,7 +54,7 @@ contract Benchmark is Script, OneInchContracts {
     // Regular v5 swap call
     v5AggregationRouter.swap(v5AggregationExecutor, v5Desc, v5Permit, v5Data);
 
-    // Opitmized router v5 swap call
+    // Optimized router v5 swap call
     (bool v5Ok,) =
       payable(v5Rtr).call(abi.encode(UNI, 100_000, v5Desc.minReturnAmount, v5Data, false));
 

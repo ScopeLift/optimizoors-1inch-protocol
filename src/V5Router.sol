@@ -7,7 +7,7 @@ import {IV5AggregationExecutor} from "src/interfaces/IV5AggregationExecutor.sol"
 import {IV5AggregationRouter} from "src/interfaces/IV5AggregationRouter.sol";
 import {AggregationV5BaseRouter} from "src/AggregationBaseRouter.sol";
 
-/// @notice A router to swap tokens using 1inch v5 aggregation
+/// @notice A router to swap tokens using 1inch's v5 aggregation router.
 contract V5Router is AggregationV5BaseRouter {
   constructor(
     IV5AggregationRouter aggregationRouter,
@@ -16,13 +16,15 @@ contract V5Router is AggregationV5BaseRouter {
     address sourceReceiver
   ) AggregationV5BaseRouter(aggregationExecutor, aggregationRouter, token, sourceReceiver) {}
 
+  // TODO: Update to handle receiving ETH
   receive() external payable {}
 
-  // TODO: minReturnAmount is the minimum allowed output amount, and can probably reduced to a max
-  // int of 500.
+  // TODO: minReturnAmount is the minimum allowed output amount, and
+  // can probably be reduced to a max integer of 500 or something of
+  // a similar magnitude. Also, amount and destination have
+  // opportunities to be optimized.
   //
-  // the flags match specific constant masks. there is no documentation on these, and there seems to
-  // be no specific logic on them
+  // Flags match specific constant masks. There is no documentation on these.
   fallback() external payable {
     (address dstToken, uint256 amount, uint256 minReturnAmount, bytes memory data, uint256 flags) =
       abi.decode(msg.data, (address, uint256, uint256, bytes, uint256));

@@ -6,19 +6,20 @@ import {IV5AggregationRouter} from "src/interfaces/IV5AggregationRouter.sol";
 import {IV4AggregationExecutor} from "src/interfaces/IV4AggregationExecutor.sol";
 import {IV4AggregationRouter} from "src/interfaces/IV4AggregationRouter.sol";
 
-/// @notice An abstract class with the necessary class variables to make a aggregation v5 optimized
-/// router
+/// @notice An abstract class with the necessary class variables
+/// to make a 1inch v5 aggregation router optimized.
 abstract contract AggregationV5BaseRouter {
-  /// @notice The contract used to execute the swap along an optimized path
+  /// @notice The contract used to execute the swap along an optimized path.
   IV5AggregationExecutor public immutable AGGREGATION_EXECUTOR;
 
-  /// @notice The 1inch contract with the unoptimized route
+  /// @notice The 1inch v5 aggregation router contract.
   IV5AggregationRouter public immutable AGGREGATION_ROUTER;
 
-  /// @notice The token being from a user to be swapped
+  /// @notice The input token being swapped.
   address public immutable TOKEN;
 
-  /// @notice Where the tokens are going in the router and it should match the executor
+  /// @notice Where the tokens are transferred in the 1inch v5 aggregation router.
+  /// It will match the AGGREGATION_EXECUTOR address.
   address public immutable SOURCE_RECEIVER;
 
   constructor(

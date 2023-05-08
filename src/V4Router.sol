@@ -13,7 +13,9 @@ contract V4Router is AggregationV4BaseRouter {
     IV4AggregationRouter aggregationRouter,
     IV4AggregationExecutor aggregationExecutor,
     address token
-  ) AggregationV4BaseRouter(aggregationExecutor, aggregationRouter, token) {}
+  ) AggregationV4BaseRouter(aggregationExecutor, aggregationRouter, token) {
+    IERC20(TOKEN).approve(address(AGGREGATION_ROUTER), type(uint256).max);
+  }
 
   // TODO: Update to handle receiving ETH
   receive() external payable {}
@@ -28,7 +30,6 @@ contract V4Router is AggregationV4BaseRouter {
     (address dstToken, uint256 amount, uint256 minReturnAmount, bytes memory data, uint256 flags) =
       abi.decode(msg.data, (address, uint256, uint256, bytes, uint256));
     IERC20(TOKEN).transferFrom(msg.sender, address(this), amount);
-    IERC20(TOKEN).approve(address(AGGREGATION_ROUTER), type(uint256).max);
     AGGREGATION_ROUTER.swap(
       AGGREGATION_EXECUTOR,
       IV4AggregationRouter.SwapDescription({

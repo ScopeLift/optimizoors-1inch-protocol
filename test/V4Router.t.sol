@@ -4,11 +4,42 @@ pragma solidity >=0.8.0;
 import {IERC20} from "openzeppelin-contracts/contracts/token/ERC20/IERC20.sol";
 import {Test} from "forge-std/Test.sol";
 
-import {RouterFactory} from "src/RouterFactory.sol";
-import {OneInchContracts} from "test/1InchContracts.sol";
+import {IV4AggregationExecutor} from "src/interfaces/IV4AggregationExecutor.sol";
 import {IV4AggregationRouter} from "src/interfaces/IV4AggregationRouter.sol";
+import {RouterFactory} from "src/RouterFactory.sol";
+import {V4Router} from "src/V4Router.sol";
+import {OneInchContracts} from "test/1InchContracts.sol";
 
 contract V4RouterTest is Test, OneInchContracts {}
+
+contract Constructor is V4RouterTest {
+  function testFuzz_CorrectlySetsAllConstructorArgs(
+    address aggregationRouterAddress,
+    address aggregationExecutorAddress,
+    address token
+  ) public {
+    IV4AggregationRouter aggregationRouter = IV4AggregationRouter(aggregationRouterAddress);
+    IV4AggregationExecutor aggregationExecutor = IV4AggregationExecutor(aggregationExecutorAddress);
+    V4Router router = new V4Router(
+            aggregationRouter,
+            aggregationExecutor,
+            token
+        );
+    assertEq(
+      address(router.AGGREGATION_ROUTER()),
+      aggregationRouterAddress,
+      "AGGREGATION_ROUTER not set correctly"
+    );
+    assertEq(
+      address(router.AGGREGATION_EXECUTOR()),
+      aggregationExecutorAddress,
+      "AGGREGATION_EXECUTOR not set correctly"
+    );
+    assertEq(
+      router.SOURCE_RECEIVER(), aggregationExecutorAddress, "SOURCE_RECEIVER not set correctly"
+    );
+  }
+}
 
 contract Fallback is V4RouterTest {
   RouterFactory factory;

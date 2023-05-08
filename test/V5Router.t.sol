@@ -8,7 +8,7 @@ import {IV5AggregationRouter} from "src/interfaces/IV5AggregationRouter.sol";
 import {IV5AggregationExecutor} from "src/interfaces/IV5AggregationExecutor.sol";
 import {RouterFactory} from "src/RouterFactory.sol";
 import {V5Router} from "src/V5Router.sol";
-import {OneInchContracts} from "test/1InchContracts.sol";
+import {OneInchContracts} from "test/OneInchContracts.sol";
 
 contract V5RouterTest is Test, OneInchContracts {}
 
@@ -86,11 +86,9 @@ contract Fallback is V5RouterTest {
   }
 
   function testFork_RevertIf_NotEnoughFunds() public {
-    (IV5AggregationRouter.SwapDescription memory desc, bytes memory permit, bytes memory data) =
-      helper_apiParams();
+    (IV5AggregationRouter.SwapDescription memory desc,, bytes memory data) = helper_apiParams();
 
     address routerAddr = factory.computeAddress(RouterFactory.RouterType.V5AggregationRouter, USDC);
-    uint256 balance = IERC20(USDC).balanceOf(swappingAddress);
     vm.startPrank(swappingAddress);
     IERC20(USDC).approve(routerAddr, 10_000_000);
     (bool ok,) =

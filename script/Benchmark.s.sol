@@ -6,7 +6,7 @@ import {Script, stdJson} from "forge-std/Script.sol";
 
 import {IV5AggregationRouter} from "src/interfaces/IV5AggregationRouter.sol";
 import {IV4AggregationRouter} from "src/interfaces/IV4AggregationRouter.sol";
-import {OneInchContracts} from "test/1InchContracts.sol";
+import {OneInchContracts} from "test/OneInchContracts.sol";
 import "forge-std/console.sol";
 
 // Script to get benchmarks the test will need

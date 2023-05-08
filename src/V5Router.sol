@@ -20,11 +20,6 @@ contract V5Router is AggregationV5BaseRouter {
   // TODO: Update to handle receiving ETH
   receive() external payable {}
 
-  // TODO: minReturnAmount is the minimum allowed output amount, and
-  // can probably be reduced to a max integer of 500 or something of
-  // a similar magnitude. Also, amount and destination have
-  // opportunities to be optimized.
-  //
   // Flags match specific constant masks. There is no documentation on these.
   fallback() external payable {
     (address dstToken, uint256 amount, uint256 minReturnAmount, bytes memory data, uint256 flags) =

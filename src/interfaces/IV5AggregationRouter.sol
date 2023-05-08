@@ -3,7 +3,6 @@ pragma solidity >=0.8.0;
 import {IV5AggregationExecutor} from "src/interfaces/IV5AggregationExecutor.sol";
 import {IERC20} from "openzeppelin-contracts/contracts/token/ERC20/IERC20.sol";
 
-// V5 router interface
 interface IV5AggregationRouter {
   struct SwapDescription {
     IERC20 srcToken;

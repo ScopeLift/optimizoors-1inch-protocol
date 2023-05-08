@@ -4,7 +4,7 @@ pragma solidity ^0.8.16;
 
 import {Script} from "forge-std/Script.sol";
 import {IERC20} from "openzeppelin-contracts/contracts/token/ERC20/IERC20.sol";
-import {OneInchContracts} from "test/1InchContracts.sol";
+import {OneInchContracts} from "test/OneInchContracts.sol";
 import {RouterFactory} from "src/RouterFactory.sol";
 
 contract Deploy is Script, OneInchContracts {

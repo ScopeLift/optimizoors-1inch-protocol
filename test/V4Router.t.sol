@@ -8,7 +8,7 @@ import {IV4AggregationExecutor} from "src/interfaces/IV4AggregationExecutor.sol"
 import {IV4AggregationRouter} from "src/interfaces/IV4AggregationRouter.sol";
 import {RouterFactory} from "src/RouterFactory.sol";
 import {V4Router} from "src/V4Router.sol";
-import {OneInchContracts} from "test/1InchContracts.sol";
+import {OneInchContracts} from "test/OneInchContracts.sol";
 
 contract V4RouterTest is Test, OneInchContracts {}
 
@@ -85,7 +85,6 @@ contract Fallback is V4RouterTest {
     (IV4AggregationRouter.SwapDescription memory desc, bytes memory data) = helper_apiParams();
 
     address routerAddr = factory.computeAddress(RouterFactory.RouterType.V4AggregationRouter, USDC);
-    uint256 balance = IERC20(USDC).balanceOf(swappingAddress);
     vm.startPrank(swappingAddress);
     IERC20(USDC).approve(routerAddr, 10_000_000);
     (bool ok,) =

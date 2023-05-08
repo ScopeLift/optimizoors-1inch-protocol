@@ -85,28 +85,7 @@ contract Fallback is V5RouterTest {
     return IERC20(UNI).balanceOf(swappingAddress);
   }
 
-  function testFork_RevertIf_NotEnoughFunds() public {
-    (IV5AggregationRouter.SwapDescription memory desc,, bytes memory data) = helper_apiParams();
-
-    address routerAddr = factory.computeAddress(RouterFactory.RouterType.V5AggregationRouter, USDC);
-    vm.startPrank(swappingAddress);
-    IERC20(USDC).approve(routerAddr, 10_000_000);
-    (bool ok,) =
-      payable(routerAddr).call(abi.encode(UNI, 10_000_000, desc.minReturnAmount, data, 0));
-    assertTrue(!ok, "Swap succeeded");
-  }
-
-  function testFork_RevertIf_ZeroAddress() public {
-    (IV5AggregationRouter.SwapDescription memory desc, bytes memory permit, bytes memory data) =
-      helper_apiParams();
-    address routerAddr = factory.computeAddress(RouterFactory.RouterType.V5AggregationRouter, USDC);
-    IERC20(USDC).approve(routerAddr, 250_000);
-    (bool ok,) =
-      payable(routerAddr).call(abi.encode(address(0), 250_000, desc.minReturnAmount, data, 0));
-    assertTrue(!ok, "Swap succeeded");
-  }
-
-  function testFork_swapUSDC() public {
+  function testFork_SwapUSDC() public {
     uint256 snapshotId = vm.snapshot();
     (IV5AggregationRouter.SwapDescription memory desc, bytes memory permit, bytes memory data) =
       helper_apiParams();
@@ -126,5 +105,25 @@ contract Fallback is V5RouterTest {
     uint256 endingBalance = IERC20(UNI).balanceOf(swappingAddress);
     uint256 nativeEndingBalance = helper_nativeSwap(desc, permit, data, snapshotId);
     assertTrue(endingBalance == nativeEndingBalance);
+  }
+
+  function testFork_RevertIf_NotEnoughFunds() public {
+    (IV5AggregationRouter.SwapDescription memory desc,, bytes memory data) = helper_apiParams();
+
+    address routerAddr = factory.computeAddress(RouterFactory.RouterType.V5AggregationRouter, USDC);
+    vm.startPrank(swappingAddress);
+    IERC20(USDC).approve(routerAddr, 10_000_000);
+    (bool ok,) =
+      payable(routerAddr).call(abi.encode(UNI, 10_000_000, desc.minReturnAmount, data, 0));
+    assertTrue(!ok, "Swap succeeded");
+  }
+
+  function testFork_RevertIf_ZeroAddress() public {
+    (IV5AggregationRouter.SwapDescription memory desc,, bytes memory data) = helper_apiParams();
+    address routerAddr = factory.computeAddress(RouterFactory.RouterType.V5AggregationRouter, USDC);
+    IERC20(USDC).approve(routerAddr, 250_000);
+    (bool ok,) =
+      payable(routerAddr).call(abi.encode(address(0), 250_000, desc.minReturnAmount, data, 0));
+    assertTrue(!ok, "Swap succeeded");
   }
 }

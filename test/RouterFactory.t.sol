@@ -21,6 +21,8 @@ interface IBadRouterFactory {
   }
 
   function deploy(BadRouterType type_, address asset) external returns (address);
+
+  function computeAddress(BadRouterType type_, address asset) external returns (address);
 }
 
 contract RouterFactoryTest is Test, OneInchContracts {
@@ -108,6 +110,13 @@ contract Deploy is RouterFactoryTest {
     vm.expectRevert();
     IBadRouterFactory(address(factory)).deploy(IBadRouterFactory.BadRouterType.MadeUpRouter, USDC);
   }
+
+  function test_RevertIf_RouterIsAlreadyDeployed() public {
+    factory.deploy(RouterFactory.RouterType.V5AggregationRouter, USDC);
+
+    vm.expectRevert();
+    factory.deploy(RouterFactory.RouterType.V5AggregationRouter, USDC);
+  }
 }
 
 contract ComputeAddress is RouterFactoryTest {
@@ -120,11 +129,15 @@ contract ComputeAddress is RouterFactoryTest {
         );
   }
 
-  function helper_salt(address asset) internal returns (bytes32) {
+  function helper_salt(address asset) internal pure returns (bytes32) {
     return bytes32(uint256(uint160(asset)));
   }
 
-  function helper_computeV4Address(address asset, address factoryAddr) internal returns (address) {
+  function helper_computeV4Address(address asset, address factoryAddr)
+    internal
+    view
+    returns (address)
+  {
     return Create2.computeCreate2Address(
       helper_salt(asset),
       factoryAddr,
@@ -133,7 +146,11 @@ contract ComputeAddress is RouterFactoryTest {
     );
   }
 
-  function helper_computeV5Address(address asset, address factoryAddr) internal returns (address) {
+  function helper_computeV5Address(address asset, address factoryAddr)
+    internal
+    view
+    returns (address)
+  {
     return Create2.computeCreate2Address(
       helper_salt(asset),
       factoryAddr,
@@ -159,6 +176,13 @@ contract ComputeAddress is RouterFactoryTest {
       computedAddress,
       helper_computeV5Address(asset, address(factory)),
       "V5 computed address is not equal to its expected address"
+    );
+  }
+
+  function test_RevertIf_InvalidRouterTypeIsProvided() public {
+    vm.expectRevert();
+    IBadRouterFactory(address(factory)).computeAddress(
+      IBadRouterFactory.BadRouterType.MadeUpRouter, USDC
     );
   }
 }

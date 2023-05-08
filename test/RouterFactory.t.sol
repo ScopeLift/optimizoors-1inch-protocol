@@ -110,7 +110,7 @@ contract Deploy is RouterFactoryTest {
     );
   }
 
-  function test_RevertIfUnsupportedRouterType() public {
+  function test_RevertIf_UnsupportedRouterType() public {
     vm.expectRevert();
     IBadOneInchRouterFactory(address(factory)).deploy(
       IBadOneInchRouterFactory.BadRouterType.MadeUpRouter, USDC

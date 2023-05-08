@@ -13,30 +13,28 @@ import {OneInchContracts} from "test/1InchContracts.sol";
 contract V4RouterTest is Test, OneInchContracts {}
 
 contract Constructor is V4RouterTest {
-  function testFuzz_CorrectlySetsAllConstructorArgs(
-    address aggregationRouterAddress,
-    address aggregationExecutorAddress,
-    address token
-  ) public {
-    IV4AggregationRouter aggregationRouter = IV4AggregationRouter(aggregationRouterAddress);
-    IV4AggregationExecutor aggregationExecutor = IV4AggregationExecutor(aggregationExecutorAddress);
+  function setUp() public {
+    vm.createSelectFork(vm.rpcUrl("optimism"), 95_544_472);
+  }
+
+  function testFork_CorrectlySetsAllConstructorArgs() public {
     V4Router router = new V4Router(
-            aggregationRouter,
-            aggregationExecutor,
-            token
+            v4AggregationRouter,
+            v4AggregationExecutor,
+            USDC
         );
     assertEq(
       address(router.AGGREGATION_ROUTER()),
-      aggregationRouterAddress,
+      address(v4AggregationRouter),
       "AGGREGATION_ROUTER not set correctly"
     );
     assertEq(
       address(router.AGGREGATION_EXECUTOR()),
-      aggregationExecutorAddress,
+      address(v4AggregationExecutor),
       "AGGREGATION_EXECUTOR not set correctly"
     );
     assertEq(
-      router.SOURCE_RECEIVER(), aggregationExecutorAddress, "SOURCE_RECEIVER not set correctly"
+      router.SOURCE_RECEIVER(), address(v4AggregationExecutor), "SOURCE_RECEIVER not set correctly"
     );
   }
 }

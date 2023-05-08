@@ -27,30 +27,14 @@ contract RouterFactoryTest is Test, OneInchContracts {
   RouterFactory factory;
 
   event RouterDeployed(RouterFactory.RouterType type_, address indexed asset);
-
-  function setUp() public {
-    factory = new RouterFactory(
-            v5AggregationExecutor,
-            v5AggregationRouter,
-            v4AggregationExecutor,
-            v4AggregationRouter
-        );
-  }
 }
 
 contract Constructor is RouterFactoryTest {
-  function testFuzz_CorrectlySetsAllConstructorArgs(
-    address v5AggregationExecutorAddress,
-    address v5AggregationRouterAddress,
-    address v4AggregationExecutorAddress,
-    address v4AggregationRouterAddress
-  ) public {
-    IV5AggregationExecutor v5AggregationExecutor =
-      IV5AggregationExecutor(v5AggregationExecutorAddress);
-    IV5AggregationRouter v5AggregationRouter = IV5AggregationRouter(v5AggregationRouterAddress);
-    IV4AggregationExecutor v4AggregationExecutor = IV4AggregationExecutor(v4AggregationExecutor);
-    IV4AggregationRouter v4AggregationRouter = IV4AggregationRouter(v4AggregationRouterAddress);
+  function setUp() public {
+    vm.createSelectFork(vm.rpcUrl("optimism"), 95_544_472);
+  }
 
+  function testFork_CorrectlySetsAllConstructorArgs() public {
     RouterFactory factory = new RouterFactory(
             v5AggregationExecutor,
             v5AggregationRouter,
@@ -81,31 +65,41 @@ contract Constructor is RouterFactoryTest {
 }
 
 contract Deploy is RouterFactoryTest {
-  function testFuzz_CorrectlyDeployV4Router(address asset) public {
+  function setUp() public {
+    vm.createSelectFork(vm.rpcUrl("optimism"), 95_544_472);
+    factory = new RouterFactory(
+            v5AggregationExecutor,
+            v5AggregationRouter,
+            v4AggregationExecutor,
+            v4AggregationRouter
+        );
+  }
+
+  function testFork_CorrectlyDeployV4Router() public {
     vm.expectEmit(true, true, true, true);
-    emit RouterDeployed(RouterFactory.RouterType.V4AggregationRouter, asset);
+    emit RouterDeployed(RouterFactory.RouterType.V4AggregationRouter, USDC);
 
     address deployedRouterAddress =
-      factory.deploy(RouterFactory.RouterType.V4AggregationRouter, asset);
+      factory.deploy(RouterFactory.RouterType.V4AggregationRouter, USDC);
 
-    factory.computeAddress(RouterFactory.RouterType.V4AggregationRouter, asset);
+    factory.computeAddress(RouterFactory.RouterType.V4AggregationRouter, USDC);
     assertEq(
       deployedRouterAddress,
-      factory.computeAddress(RouterFactory.RouterType.V4AggregationRouter, asset),
+      factory.computeAddress(RouterFactory.RouterType.V4AggregationRouter, USDC),
       "Address not equal to computed v4 router address"
     );
   }
 
-  function testFuzz_CorrectlyDeployV5Router(address asset) public {
+  function testFork_CorrectlyDeployV5Router() public {
     vm.expectEmit(true, true, true, true);
-    emit RouterDeployed(RouterFactory.RouterType.V5AggregationRouter, asset);
+    emit RouterDeployed(RouterFactory.RouterType.V5AggregationRouter, USDC);
 
     address deployedRouterAddress =
-      factory.deploy(RouterFactory.RouterType.V5AggregationRouter, asset);
+      factory.deploy(RouterFactory.RouterType.V5AggregationRouter, USDC);
 
     assertEq(
       deployedRouterAddress,
-      factory.computeAddress(RouterFactory.RouterType.V5AggregationRouter, asset),
+      factory.computeAddress(RouterFactory.RouterType.V5AggregationRouter, USDC),
       "Address not equal to computed v5 router address"
     );
   }
@@ -117,6 +111,15 @@ contract Deploy is RouterFactoryTest {
 }
 
 contract ComputeAddress is RouterFactoryTest {
+  function setUp() public {
+    factory = new RouterFactory(
+            v5AggregationExecutor,
+            v5AggregationRouter,
+            v4AggregationExecutor,
+            v4AggregationRouter
+        );
+  }
+
   function helper_salt(address asset) internal returns (bytes32) {
     return bytes32(uint256(uint160(asset)));
   }

@@ -14,7 +14,7 @@ contract V5Router is AggregationV5BaseRouter {
     IV5AggregationExecutor aggregationExecutor,
     address token
   ) AggregationV5BaseRouter(aggregationExecutor, aggregationRouter, token) {
-    IERC20(TOKEN).approve(address(AGGREGATION_ROUTER), type(uint256).max);
+    IERC20(token).approve(address(aggregationRouter), type(uint256).max);
   }
 
   // TODO: Update to handle receiving ETH

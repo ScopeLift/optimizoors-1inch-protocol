@@ -31,14 +31,6 @@ contract OneInchRouterFactory {
   /// @notice The 1inch v4 aggregation router contract.
   IV4AggregationRouter public immutable V4_AGGREGATION_ROUTER;
 
-  /// @notice The address the 1inch v5 aggregation router will send the the input tokens.
-  /// This will match the V5_AGGREGATION_EXECUTOR address.
-  address public immutable V5_SOURCE_RECEIVER;
-
-  /// @notice The address the 1inch v4 aggregation router will send the the input tokens.
-  /// This will match the V4_AGGREGATION_EXECUTOR address.
-  address public immutable V4_SOURCE_RECEIVER;
-
   event RouterDeployed(RouterType type_, address indexed asset);
 
   constructor(
@@ -49,10 +41,8 @@ contract OneInchRouterFactory {
   ) {
     V5_AGGREGATION_EXECUTOR = v5AggregationExecutor;
     V5_AGGREGATION_ROUTER = v5AggregationRouter;
-    V5_SOURCE_RECEIVER = address(v5AggregationExecutor);
     V4_AGGREGATION_EXECUTOR = v4AggregationExecutor;
     V4_AGGREGATION_ROUTER = v4AggregationRouter;
-    V4_SOURCE_RECEIVER = address(v4AggregationExecutor);
   }
 
   function deploy(RouterType type_, address asset) external returns (address) {
@@ -63,8 +53,7 @@ contract OneInchRouterFactory {
         new V5Router{salt: salt}(
                     V5_AGGREGATION_ROUTER,
                     V5_AGGREGATION_EXECUTOR,
-                    asset,
-                    V5_SOURCE_RECEIVER
+                    asset
                 )
       );
     } else if (type_ == RouterType.V4AggregationRouter) {
@@ -72,8 +61,7 @@ contract OneInchRouterFactory {
         new V4Router{salt: salt}(
                     V4_AGGREGATION_ROUTER,
                     V4_AGGREGATION_EXECUTOR,
-                    asset,
-                    V4_SOURCE_RECEIVER
+                    asset
                 )
       );
     } else {
@@ -98,7 +86,7 @@ contract OneInchRouterFactory {
       _salt(asset),
       address(this),
       type(V4Router).creationCode,
-      abi.encode(V4_AGGREGATION_ROUTER, V4_AGGREGATION_EXECUTOR, asset, V4_SOURCE_RECEIVER)
+      abi.encode(V4_AGGREGATION_ROUTER, V4_AGGREGATION_EXECUTOR, asset)
     );
   }
 
@@ -107,7 +95,7 @@ contract OneInchRouterFactory {
       _salt(asset),
       address(this),
       type(V5Router).creationCode,
-      abi.encode(V5_AGGREGATION_ROUTER, V5_AGGREGATION_EXECUTOR, asset, V5_SOURCE_RECEIVER)
+      abi.encode(V5_AGGREGATION_ROUTER, V5_AGGREGATION_EXECUTOR, asset)
     );
   }
 

@@ -24,13 +24,12 @@ abstract contract AggregationV5BaseRouter {
   constructor(
     IV5AggregationExecutor aggregationExecutor,
     IV5AggregationRouter aggregationRouter,
-    address token,
-    address sourceReceiver
+    address token
   ) {
     AGGREGATION_EXECUTOR = aggregationExecutor;
     AGGREGATION_ROUTER = aggregationRouter;
     TOKEN = token;
-    SOURCE_RECEIVER = sourceReceiver;
+    SOURCE_RECEIVER = address(aggregationExecutor);
   }
 }
 
@@ -53,12 +52,11 @@ abstract contract AggregationV4BaseRouter {
   constructor(
     IV4AggregationExecutor aggregationExecutor,
     IV4AggregationRouter aggregationRouter,
-    address token,
-    address sourceReceiver
+    address token
   ) {
     AGGREGATION_EXECUTOR = aggregationExecutor;
     AGGREGATION_ROUTER = aggregationRouter;
     TOKEN = token;
-    SOURCE_RECEIVER = sourceReceiver;
+    SOURCE_RECEIVER = address(aggregationExecutor);
   }
 }

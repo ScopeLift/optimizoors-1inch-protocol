@@ -12,9 +12,8 @@ contract V4Router is AggregationV4BaseRouter {
   constructor(
     IV4AggregationRouter aggregationRouter,
     IV4AggregationExecutor aggregationExecutor,
-    address token,
-    address sourceReceiver
-  ) AggregationV4BaseRouter(aggregationExecutor, aggregationRouter, token, sourceReceiver) {}
+    address token
+  ) AggregationV4BaseRouter(aggregationExecutor, aggregationRouter, token) {}
 
   // TODO: Update to handle receiving ETH
   receive() external payable {}

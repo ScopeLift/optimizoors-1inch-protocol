@@ -12,9 +12,8 @@ contract V5Router is AggregationV5BaseRouter {
   constructor(
     IV5AggregationRouter aggregationRouter,
     IV5AggregationExecutor aggregationExecutor,
-    address token,
-    address sourceReceiver
-  ) AggregationV5BaseRouter(aggregationExecutor, aggregationRouter, token, sourceReceiver) {}
+    address token
+  ) AggregationV5BaseRouter(aggregationExecutor, aggregationRouter, token) {}
 
   // TODO: Update to handle receiving ETH
   receive() external payable {}

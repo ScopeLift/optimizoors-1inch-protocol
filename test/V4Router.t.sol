@@ -95,7 +95,7 @@ contract Fallback is V4RouterTest {
     assertTrue(!ok, "Swap succeeded");
   }
 
-  function testFork_RevertIf_zeroAddress() public {
+  function testFork_RevertIf_ZeroAddress() public {
     (IV4AggregationRouter.SwapDescription memory desc, bytes memory data) = helper_apiParams();
     address routerAddr = factory.computeAddress(RouterFactory.RouterType.V4AggregationRouter, USDC);
     IERC20(USDC).approve(routerAddr, 250_000);

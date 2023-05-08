@@ -5,7 +5,7 @@ import {Test} from "forge-std/Test.sol";
 
 import {Create2} from "src/lib/Create2.sol";
 
-contract Create2Test is Test {
+contract ComputeCreate2Address is Test {
   function test_GenerateCreate2Address() external {
     bytes32 salt = bytes32(uint256(31_415));
     bytes memory initcodeHash = abi.encode(0x6080);

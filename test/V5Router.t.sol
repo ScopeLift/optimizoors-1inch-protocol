@@ -4,25 +4,56 @@ pragma solidity >=0.8.0;
 import {IERC20} from "openzeppelin-contracts/contracts/token/ERC20/IERC20.sol";
 import {Test} from "forge-std/Test.sol";
 
-import {OneInchRouterFactory} from "src/RouterFactory.sol";
-import {OneInchContracts} from "test/1InchContracts.sol";
 import {IV5AggregationRouter} from "src/interfaces/IV5AggregationRouter.sol";
+import {IV5AggregationExecutor} from "src/interfaces/IV5AggregationExecutor.sol";
+import {RouterFactory} from "src/RouterFactory.sol";
+import {V5Router} from "src/V5Router.sol";
+import {OneInchContracts} from "test/1InchContracts.sol";
 
 contract V5RouterTest is Test, OneInchContracts {}
 
+contract Constructor is V5RouterTest {
+  function testFuzz_CorrectlySetsAllConstructorArgs(
+    address aggregationRouterAddress,
+    address aggregationExecutorAddress,
+    address token
+  ) public {
+    IV5AggregationRouter aggregationRouter = IV5AggregationRouter(aggregationRouterAddress);
+    IV5AggregationExecutor aggregationExecutor = IV5AggregationExecutor(aggregationExecutorAddress);
+    V5Router router = new V5Router(
+            aggregationRouter,
+            aggregationExecutor,
+            token
+        );
+    assertEq(
+      address(router.AGGREGATION_ROUTER()),
+      aggregationRouterAddress,
+      "AGGREGATION_ROUTER not set correctly"
+    );
+    assertEq(
+      address(router.AGGREGATION_EXECUTOR()),
+      aggregationExecutorAddress,
+      "AGGREGATION_EXECUTOR not set correctly"
+    );
+    assertEq(
+      router.SOURCE_RECEIVER(), aggregationExecutorAddress, "SOURCE_RECEIVER not set correctly"
+    );
+  }
+}
+
 contract Fallback is V5RouterTest {
-  OneInchRouterFactory factory;
+  RouterFactory factory;
   address swappingAddress;
 
   function setUp() public {
     vm.createSelectFork(vm.rpcUrl("optimism"), 94_524_034);
-    factory = new OneInchRouterFactory(
+    factory = new RouterFactory(
             v5AggregationExecutor,
             v5AggregationRouter,
             v4AggregationExecutor,
             v4AggregationRouter
         );
-    factory.deploy(OneInchRouterFactory.RouterType.V5AggregationRouter, USDC);
+    factory.deploy(RouterFactory.RouterType.V5AggregationRouter, USDC);
     deal(USDC, address(this), 100_000_000);
     // Address the api calldata uses as the swapper
     swappingAddress = 0xEAC5F0d4A9a45E1f9FdD0e7e2882e9f60E301156;
@@ -60,8 +91,7 @@ contract Fallback is V5RouterTest {
     (IV5AggregationRouter.SwapDescription memory desc, bytes memory permit, bytes memory data) =
       helper_apiParams();
 
-    address routerAddr =
-      factory.computeAddress(OneInchRouterFactory.RouterType.V5AggregationRouter, USDC);
+    address routerAddr = factory.computeAddress(RouterFactory.RouterType.V5AggregationRouter, USDC);
     uint256 balance = IERC20(USDC).balanceOf(swappingAddress);
     vm.startPrank(swappingAddress);
     IERC20(USDC).approve(routerAddr, 10_000_000);
@@ -73,8 +103,7 @@ contract Fallback is V5RouterTest {
   function testFork_RevertIf_zeroAddress() public {
     (IV5AggregationRouter.SwapDescription memory desc, bytes memory permit, bytes memory data) =
       helper_apiParams();
-    address routerAddr =
-      factory.computeAddress(OneInchRouterFactory.RouterType.V5AggregationRouter, USDC);
+    address routerAddr = factory.computeAddress(RouterFactory.RouterType.V5AggregationRouter, USDC);
     IERC20(USDC).approve(routerAddr, 250_000);
     (bool ok,) =
       payable(routerAddr).call(abi.encode(address(0), 250_000, desc.minReturnAmount, data, 0));
@@ -87,8 +116,7 @@ contract Fallback is V5RouterTest {
       helper_apiParams();
     // Setup optimized router call
     vm.startPrank(swappingAddress);
-    address routerAddr =
-      factory.computeAddress(OneInchRouterFactory.RouterType.V5AggregationRouter, USDC);
+    address routerAddr = factory.computeAddress(RouterFactory.RouterType.V5AggregationRouter, USDC);
     IERC20(USDC).approve(routerAddr, 100_000);
     uint256 startingBalance = IERC20(UNI).balanceOf(swappingAddress);
     assertTrue(startingBalance == 0);

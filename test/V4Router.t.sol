@@ -4,25 +4,25 @@ pragma solidity >=0.8.0;
 import {IERC20} from "openzeppelin-contracts/contracts/token/ERC20/IERC20.sol";
 import {Test} from "forge-std/Test.sol";
 
-import {OneInchRouterFactory} from "src/RouterFactory.sol";
+import {RouterFactory} from "src/RouterFactory.sol";
 import {OneInchContracts} from "test/1InchContracts.sol";
 import {IV4AggregationRouter} from "src/interfaces/IV4AggregationRouter.sol";
 
 contract V4RouterTest is Test, OneInchContracts {}
 
 contract Fallback is V4RouterTest {
-  OneInchRouterFactory factory;
+  RouterFactory factory;
   address swappingAddress;
 
   function setUp() public {
     vm.createSelectFork(vm.rpcUrl("optimism"), 95_544_472);
-    factory = new OneInchRouterFactory(
+    factory = new RouterFactory(
             v5AggregationExecutor,
             v5AggregationRouter,
             v4AggregationExecutor,
             v4AggregationRouter
         );
-    factory.deploy(OneInchRouterFactory.RouterType.V4AggregationRouter, USDC);
+    factory.deploy(RouterFactory.RouterType.V4AggregationRouter, USDC);
     deal(USDC, address(this), 100_000_000);
     swappingAddress = 0xEAC5F0d4A9a45E1f9FdD0e7e2882e9f60E301156;
   }
@@ -55,8 +55,7 @@ contract Fallback is V4RouterTest {
   function testFork_RevertIf_NotEnoughFunds() public {
     (IV4AggregationRouter.SwapDescription memory desc, bytes memory data) = helper_apiParams();
 
-    address routerAddr =
-      factory.computeAddress(OneInchRouterFactory.RouterType.V4AggregationRouter, USDC);
+    address routerAddr = factory.computeAddress(RouterFactory.RouterType.V4AggregationRouter, USDC);
     uint256 balance = IERC20(USDC).balanceOf(swappingAddress);
     vm.startPrank(swappingAddress);
     IERC20(USDC).approve(routerAddr, 10_000_000);
@@ -67,8 +66,7 @@ contract Fallback is V4RouterTest {
 
   function testFork_RevertIf_zeroAddress() public {
     (IV4AggregationRouter.SwapDescription memory desc, bytes memory data) = helper_apiParams();
-    address routerAddr =
-      factory.computeAddress(OneInchRouterFactory.RouterType.V4AggregationRouter, USDC);
+    address routerAddr = factory.computeAddress(RouterFactory.RouterType.V4AggregationRouter, USDC);
     IERC20(USDC).approve(routerAddr, 250_000);
     (bool ok,) =
       payable(routerAddr).call(abi.encode(address(0), 250_000, desc.minReturnAmount, data, 0));
@@ -80,8 +78,7 @@ contract Fallback is V4RouterTest {
     (IV4AggregationRouter.SwapDescription memory desc, bytes memory data) = helper_apiParams();
     // Setup the optimized router call
     vm.startPrank(swappingAddress);
-    address routerAddr =
-      factory.computeAddress(OneInchRouterFactory.RouterType.V4AggregationRouter, USDC);
+    address routerAddr = factory.computeAddress(RouterFactory.RouterType.V4AggregationRouter, USDC);
     IERC20(USDC).approve(routerAddr, 100_000);
     uint256 startingBalance = IERC20(UNI).balanceOf(swappingAddress);
     assertTrue(startingBalance == 0);

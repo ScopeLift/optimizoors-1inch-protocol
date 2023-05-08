@@ -10,7 +10,7 @@ import {V5Router} from "src/V5Router.sol";
 import {V4Router} from "src/V4Router.sol";
 
 /// @notice A factory for deploying an optimized router for a given asset and router type.
-contract OneInchRouterFactory {
+contract RouterFactory {
   error RouterTypeDoesNotExist();
 
   enum RouterType {

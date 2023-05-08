@@ -55,8 +55,7 @@ contract Benchmark is Script, OneInchContracts {
     v5AggregationRouter.swap(v5AggregationExecutor, v5Desc, v5Permit, v5Data);
 
     // Optimized router v5 swap call
-    (bool v5Ok,) =
-      payable(v5Rtr).call(abi.encode(UNI, 100_000, v5Desc.minReturnAmount, v5Data, false));
+    (bool v5Ok,) = payable(v5Rtr).call(abi.encode(UNI, 100_000, v5Desc.minReturnAmount, v5Data, 0));
 
     if (!v5Ok) revert OptimizedV5RouterFailed();
 
@@ -74,8 +73,7 @@ contract Benchmark is Script, OneInchContracts {
     v4AggregationRouter.swap(v4AggregationExecutor, v4Desc, v4Data);
 
     // Optimized v4 swap call
-    (bool v4Ok,) =
-      payable(v4Rtr).call(abi.encode(UNI, 100_000, v4Desc.minReturnAmount, v4Data, false));
+    (bool v4Ok,) = payable(v4Rtr).call(abi.encode(UNI, 100_000, v4Desc.minReturnAmount, v4Data, 0));
     if (!v4Ok) revert OptimizedV4RouterFailed();
   }
 }

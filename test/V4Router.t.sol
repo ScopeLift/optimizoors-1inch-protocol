@@ -98,17 +98,21 @@ contract Fallback is V4RouterTest {
     address routerAddr = factory.computeAddress(RouterFactory.RouterType.V4AggregationRouter, USDC);
     IERC20(USDC).approve(routerAddr, 100_000);
     uint256 startingBalance = IERC20(UNI).balanceOf(swapSenderAddress);
-    assertTrue(startingBalance == 0);
+    assertEq(startingBalance, 0, "Starting balance is incorrect");
 
     // Optimized router call
     (bool ok,) = payable(routerAddr).call(abi.encode(UNI, 100_000, desc.minReturnAmount, data, 0));
 
-    assertTrue(ok);
+    assertTrue(ok, "Swap failed");
 
     // Compare balance to native aggregation router call
     uint256 endingBalance = IERC20(UNI).balanceOf(swapSenderAddress);
     uint256 nativeEndingBalance = helper_nativeSwap(desc, data, snapshotId);
-    assertTrue(endingBalance == nativeEndingBalance);
+    assertEq(
+      endingBalance,
+      nativeEndingBalance,
+      "Ending balance does not match the balance when calling 1inch directly"
+    );
   }
 
   function testFork_RevertIf_NotEnoughFunds() public {

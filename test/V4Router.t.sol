@@ -41,7 +41,14 @@ contract Constructor is V4RouterTest {
 
 contract Fallback is V4RouterTest {
   RouterFactory factory;
-  address swappingAddress;
+  // The address that is initiating the swap on 1inch.
+  // This address is hardcoded because it needs to
+  // match the address used to generate the data argument
+  // needed for a swap.
+  //
+  // If the data argument in these tests is recreated than this
+  // address will potentially need to change.
+  address swapSenderAddress;
 
   function setUp() public {
     vm.createSelectFork(vm.rpcUrl("optimism"), 95_544_472);
@@ -53,7 +60,7 @@ contract Fallback is V4RouterTest {
         );
     factory.deploy(RouterFactory.RouterType.V4AggregationRouter, USDC);
     deal(USDC, address(this), 100_000_000);
-    swappingAddress = 0xEAC5F0d4A9a45E1f9FdD0e7e2882e9f60E301156;
+    swapSenderAddress = 0xEAC5F0d4A9a45E1f9FdD0e7e2882e9f60E301156;
   }
 
   function helper_nativeSwap(
@@ -63,7 +70,7 @@ contract Fallback is V4RouterTest {
   ) public returns (uint256) {
     vm.revertTo(snapshotId);
     v4AggregationRouter.swap(v4AggregationExecutor, desc, data);
-    return IERC20(UNI).balanceOf(swappingAddress);
+    return IERC20(UNI).balanceOf(swapSenderAddress);
   }
 
   function helper_apiParams()
@@ -85,10 +92,10 @@ contract Fallback is V4RouterTest {
     uint256 snapshotId = vm.snapshot();
     (IV4AggregationRouter.SwapDescription memory desc, bytes memory data) = helper_apiParams();
     // Setup the optimized router call
-    vm.startPrank(swappingAddress);
+    vm.startPrank(swapSenderAddress);
     address routerAddr = factory.computeAddress(RouterFactory.RouterType.V4AggregationRouter, USDC);
     IERC20(USDC).approve(routerAddr, 100_000);
-    uint256 startingBalance = IERC20(UNI).balanceOf(swappingAddress);
+    uint256 startingBalance = IERC20(UNI).balanceOf(swapSenderAddress);
     assertTrue(startingBalance == 0);
 
     // Optimized router call
@@ -97,7 +104,7 @@ contract Fallback is V4RouterTest {
     assertTrue(ok);
 
     // Compare balance to native aggregation router call
-    uint256 endingBalance = IERC20(UNI).balanceOf(swappingAddress);
+    uint256 endingBalance = IERC20(UNI).balanceOf(swapSenderAddress);
     uint256 nativeEndingBalance = helper_nativeSwap(desc, data, snapshotId);
     assertTrue(endingBalance == nativeEndingBalance);
   }
@@ -106,7 +113,7 @@ contract Fallback is V4RouterTest {
     (IV4AggregationRouter.SwapDescription memory desc, bytes memory data) = helper_apiParams();
 
     address routerAddr = factory.computeAddress(RouterFactory.RouterType.V4AggregationRouter, USDC);
-    vm.startPrank(swappingAddress);
+    vm.startPrank(swapSenderAddress);
     IERC20(USDC).approve(routerAddr, 10_000_000);
     (bool ok,) =
       payable(routerAddr).call(abi.encode(UNI, 10_000_000, desc.minReturnAmount, data, 0));

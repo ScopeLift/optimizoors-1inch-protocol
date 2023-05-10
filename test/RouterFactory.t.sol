@@ -78,7 +78,7 @@ contract Deploy is RouterFactoryTest {
   }
 
   function testFork_CorrectlyDeployV4Router() public {
-    vm.expectEmit(true, true, true, true);
+    vm.expectEmit();
     emit RouterDeployed(RouterFactory.RouterType.V4AggregationRouter, USDC);
 
     address deployedRouterAddress =
@@ -93,7 +93,7 @@ contract Deploy is RouterFactoryTest {
   }
 
   function testFork_CorrectlyDeployV5Router() public {
-    vm.expectEmit(true, true, true, true);
+    vm.expectEmit();
     emit RouterDeployed(RouterFactory.RouterType.V5AggregationRouter, USDC);
 
     address deployedRouterAddress =

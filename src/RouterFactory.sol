@@ -77,6 +77,10 @@ contract RouterFactory {
     } else if (type_ == RouterType.V5AggregationRouter) {
       return _computeV5AggregationRouterAddress(asset);
     } else {
+      // In practice this branch will never be hit, and is
+      // meant to catch situations in development when a
+      // new RouterType has been added and it is not yet
+      // supported in this function.
       revert RouterTypeDoesNotExist();
     }
   }

@@ -107,14 +107,14 @@ contract Deploy is RouterFactoryTest {
   }
 
   function test_RevertIf_UnsupportedRouterType() public {
-    vm.expectRevert();
+    vm.expectRevert(bytes(""));
     IBadRouterFactory(address(factory)).deploy(IBadRouterFactory.BadRouterType.MadeUpRouter, USDC);
   }
 
   function test_RevertIf_RouterIsAlreadyDeployed() public {
     factory.deploy(RouterFactory.RouterType.V5AggregationRouter, USDC);
 
-    vm.expectRevert();
+    vm.expectRevert(bytes(""));
     factory.deploy(RouterFactory.RouterType.V5AggregationRouter, USDC);
   }
 }
@@ -180,7 +180,7 @@ contract ComputeAddress is RouterFactoryTest {
   }
 
   function test_RevertIf_InvalidRouterTypeIsProvided() public {
-    vm.expectRevert();
+    vm.expectRevert(bytes(""));
     IBadRouterFactory(address(factory)).computeAddress(
       IBadRouterFactory.BadRouterType.MadeUpRouter, USDC
     );

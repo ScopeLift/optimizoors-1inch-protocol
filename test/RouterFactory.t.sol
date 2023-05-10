@@ -77,10 +77,14 @@ contract Deploy is RouterFactoryTest {
         );
   }
 
-  function testFork_CorrectlyDeployV4Router() public {
+  function testFork_EmitV4RouterDeployedEvent() public {
     vm.expectEmit();
     emit RouterDeployed(RouterFactory.RouterType.V4AggregationRouter, USDC);
 
+    factory.deploy(RouterFactory.RouterType.V4AggregationRouter, USDC);
+  }
+
+  function testFork_ReturnsV4RouterAddress() public {
     address deployedRouterAddress =
       factory.deploy(RouterFactory.RouterType.V4AggregationRouter, USDC);
 
@@ -92,10 +96,20 @@ contract Deploy is RouterFactoryTest {
     );
   }
 
-  function testFork_CorrectlyDeployV5Router() public {
+  function testFork_CorrectlyDeploysV4Router() public {
+    address deployedRouterAddress =
+      factory.deploy(RouterFactory.RouterType.V4AggregationRouter, USDC);
+    assertGt(deployedRouterAddress.code.length, 0, "no code");
+  }
+
+  function testFork_EmitV5RouterDeployedEvent() public {
     vm.expectEmit();
     emit RouterDeployed(RouterFactory.RouterType.V5AggregationRouter, USDC);
 
+    factory.deploy(RouterFactory.RouterType.V5AggregationRouter, USDC);
+  }
+
+  function testFork_ReturnsV5RouterAddress() public {
     address deployedRouterAddress =
       factory.deploy(RouterFactory.RouterType.V5AggregationRouter, USDC);
 
@@ -104,6 +118,12 @@ contract Deploy is RouterFactoryTest {
       factory.computeAddress(RouterFactory.RouterType.V5AggregationRouter, USDC),
       "Address not equal to computed v5 router address"
     );
+  }
+
+  function testFork_CorrectlyDeploysV5Router() public {
+    address deployedRouterAddress =
+      factory.deploy(RouterFactory.RouterType.V5AggregationRouter, USDC);
+    assertGt(deployedRouterAddress.code.length, 0, "no code");
   }
 
   function test_RevertIf_UnsupportedRouterType() public {

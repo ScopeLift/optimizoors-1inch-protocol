@@ -46,8 +46,8 @@ contract Fallback is V4RouterTest {
   // match the address used to generate the data argument
   // needed for a swap.
   //
-  // If the data argument in these tests is recreated than this
-  // address will potentially need to change.
+  // If the data argument in these tests is recreated
+  // than this address will potentially need to change.
   address swapSenderAddress;
 
   function setUp() public {

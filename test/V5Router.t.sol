@@ -41,7 +41,14 @@ contract Constructor is V5RouterTest {
 
 contract Fallback is V5RouterTest {
   RouterFactory factory;
-  address swappingAddress;
+  // The address that is initiating the swap on 1inch.
+  // This address is hardcoded because it needs to
+  // match the address used to generate the data argument
+  // needed for a swap.
+  //
+  // If the data argument in these tests is recreated
+  // than this address will potentially need to change.
+  address swapSenderAddress;
 
   function setUp() public {
     vm.createSelectFork(vm.rpcUrl("optimism"), 94_524_034);
@@ -54,7 +61,7 @@ contract Fallback is V5RouterTest {
     factory.deploy(RouterFactory.RouterType.V5AggregationRouter, USDC);
     deal(USDC, address(this), 100_000_000);
     // Address the api calldata uses as the swapper
-    swappingAddress = 0xEAC5F0d4A9a45E1f9FdD0e7e2882e9f60E301156;
+    swapSenderAddress = 0xEAC5F0d4A9a45E1f9FdD0e7e2882e9f60E301156;
   }
 
   function helper_apiParams()
@@ -84,7 +91,7 @@ contract Fallback is V5RouterTest {
   ) public returns (uint256) {
     vm.revertTo(snapshotId);
     v5AggregationRouter.swap(v5AggregationExecutor, desc, permit, data);
-    return IERC20(UNI).balanceOf(swappingAddress);
+    return IERC20(UNI).balanceOf(swapSenderAddress);
   }
 
   function testFork_SwapUSDC() public {
@@ -92,10 +99,10 @@ contract Fallback is V5RouterTest {
     (IV5AggregationRouter.SwapDescription memory desc, bytes memory permit, bytes memory data) =
       helper_apiParams();
     // Setup optimized router call
-    vm.startPrank(swappingAddress);
+    vm.startPrank(swapSenderAddress);
     address routerAddr = factory.computeAddress(RouterFactory.RouterType.V5AggregationRouter, USDC);
     IERC20(USDC).approve(routerAddr, 100_000);
-    uint256 startingBalance = IERC20(UNI).balanceOf(swappingAddress);
+    uint256 startingBalance = IERC20(UNI).balanceOf(swapSenderAddress);
     assertEq(startingBalance, 0, "Starting balance is not 0");
 
     // Optimized router call
@@ -104,7 +111,7 @@ contract Fallback is V5RouterTest {
     assertTrue(ok, "Swap failed");
 
     // Compare balance to native aggregation router call
-    uint256 endingBalance = IERC20(UNI).balanceOf(swappingAddress);
+    uint256 endingBalance = IERC20(UNI).balanceOf(swapSenderAddress);
     uint256 nativeEndingBalance = helper_nativeSwap(desc, permit, data, snapshotId);
     assertEq(
       endingBalance,
@@ -117,7 +124,7 @@ contract Fallback is V5RouterTest {
     (IV5AggregationRouter.SwapDescription memory desc,, bytes memory data) = helper_apiParams();
 
     address routerAddr = factory.computeAddress(RouterFactory.RouterType.V5AggregationRouter, USDC);
-    vm.startPrank(swappingAddress);
+    vm.startPrank(swapSenderAddress);
     IERC20(USDC).approve(routerAddr, 10_000_000);
     (bool ok,) =
       payable(routerAddr).call(abi.encode(UNI, 10_000_000, desc.minReturnAmount, data, 0));

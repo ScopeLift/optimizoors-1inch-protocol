@@ -141,6 +141,7 @@ contract Deploy is RouterFactoryTest {
 
 contract ComputeAddress is RouterFactoryTest {
   function setUp() public {
+    vm.createSelectFork(vm.rpcUrl("optimism"), 95_544_472);
     factory = new RouterFactory(
             v5AggregationExecutor,
             v5AggregationRouter,
@@ -149,54 +150,20 @@ contract ComputeAddress is RouterFactoryTest {
         );
   }
 
-  function helper_salt(address asset) internal pure returns (bytes32) {
-    return bytes32(uint256(uint160(asset)));
-  }
-
-  function helper_computeV4Address(address asset, address factoryAddr)
-    internal
-    view
-    returns (address)
-  {
-    return Create2.computeCreate2Address(
-      helper_salt(asset),
-      factoryAddr,
-      type(V4Router).creationCode,
-      abi.encode(v4AggregationRouter, v4AggregationExecutor, asset)
-    );
-  }
-
-  function helper_computeV5Address(address asset, address factoryAddr)
-    internal
-    view
-    returns (address)
-  {
-    return Create2.computeCreate2Address(
-      helper_salt(asset),
-      factoryAddr,
-      type(V5Router).creationCode,
-      abi.encode(v5AggregationRouter, v5AggregationExecutor, asset)
-    );
-  }
-
-  function testFuzz_ComputeV4Address(address asset) public {
+  function testFork_ComputeV4Address() public {
     address computedAddress =
-      factory.computeAddress(RouterFactory.RouterType.V4AggregationRouter, asset);
-    assertEq(
-      computedAddress,
-      helper_computeV4Address(asset, address(factory)),
-      "V4 computed address is not equal to its expected address"
-    );
+      factory.computeAddress(RouterFactory.RouterType.V4AggregationRouter, USDC);
+    assertEq(computedAddress.code.length, 0, "There is code at the computed address");
+    factory.deploy(RouterFactory.RouterType.V4AggregationRouter, USDC);
+    assertGt(computedAddress.code.length, 0, "There should be code at the computed address");
   }
 
-  function testFuzz_ComputeV5Address(address asset) public {
+  function testFork_ComputeV5Address() public {
     address computedAddress =
-      factory.computeAddress(RouterFactory.RouterType.V5AggregationRouter, asset);
-    assertEq(
-      computedAddress,
-      helper_computeV5Address(asset, address(factory)),
-      "V5 computed address is not equal to its expected address"
-    );
+      factory.computeAddress(RouterFactory.RouterType.V5AggregationRouter, USDC);
+    assertEq(computedAddress.code.length, 0, "There is code at the computed address");
+    factory.deploy(RouterFactory.RouterType.V5AggregationRouter, USDC);
+    assertGt(computedAddress.code.length, 0, "There should be code at the computed address");
   }
 
   function test_RevertIf_InvalidRouterTypeIsProvided() public {

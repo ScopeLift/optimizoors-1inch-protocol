@@ -49,6 +49,7 @@ contract Fallback is V4RouterTest {
   // If the data argument in these tests is recreated
   // than this address will potentially need to change.
   address swapSenderAddress;
+  address routerAddr;
 
   function setUp() public {
     vm.createSelectFork(vm.rpcUrl("optimism"), 95_544_472);
@@ -61,6 +62,7 @@ contract Fallback is V4RouterTest {
     factory.deploy(RouterFactory.RouterType.V4AggregationRouter, USDC);
     deal(USDC, address(this), 100_000_000);
     swapSenderAddress = 0xEAC5F0d4A9a45E1f9FdD0e7e2882e9f60E301156;
+    routerAddr = factory.computeAddress(RouterFactory.RouterType.V4AggregationRouter, USDC);
   }
 
   function helper_nativeSwap(
@@ -95,7 +97,6 @@ contract Fallback is V4RouterTest {
     (IV4AggregationRouter.SwapDescription memory desc, bytes memory data) = helper_apiParams();
     // Setup the optimized router call
     vm.startPrank(swapSenderAddress);
-    address routerAddr = factory.computeAddress(RouterFactory.RouterType.V4AggregationRouter, USDC);
     IERC20(USDC).approve(routerAddr, 100_000);
     uint256 startingBalance = IERC20(UNI).balanceOf(swapSenderAddress);
     assertEq(startingBalance, 0, "Starting balance is incorrect");
@@ -118,7 +119,6 @@ contract Fallback is V4RouterTest {
   function testFork_RevertIf_NotEnoughFunds() public {
     (IV4AggregationRouter.SwapDescription memory desc, bytes memory data) = helper_apiParams();
 
-    address routerAddr = factory.computeAddress(RouterFactory.RouterType.V4AggregationRouter, USDC);
     vm.startPrank(swapSenderAddress);
     IERC20(USDC).approve(routerAddr, 10_000_000);
     (bool ok,) =
@@ -128,7 +128,6 @@ contract Fallback is V4RouterTest {
 
   function testFork_RevertIf_ZeroAddress() public {
     (IV4AggregationRouter.SwapDescription memory desc, bytes memory data) = helper_apiParams();
-    address routerAddr = factory.computeAddress(RouterFactory.RouterType.V4AggregationRouter, USDC);
     IERC20(USDC).approve(routerAddr, 250_000);
     (bool ok,) =
       payable(routerAddr).call(abi.encode(address(0), 250_000, desc.minReturnAmount, data, 0));

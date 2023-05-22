@@ -68,9 +68,7 @@ contract Fallback is V4RouterTest {
   function helper_nativeSwap(
     IV4AggregationRouter.SwapDescription memory desc,
     bytes memory data,
-    uint256 snapshotId
   ) public returns (uint256) {
-    vm.revertTo(snapshotId);
     v4AggregationRouter.swap(v4AggregationExecutor, desc, data);
     return IERC20(UNI).balanceOf(swapSenderAddress);
   }
@@ -92,13 +90,14 @@ contract Fallback is V4RouterTest {
     return (desc, data);
   }
 
-  function testFork_SwapUSDC() public {
+  function testFork_SwapUSDCForUni() public {
     uint256 snapshotId = vm.snapshot();
     (IV4AggregationRouter.SwapDescription memory desc, bytes memory data) = helper_apiParams();
     // Setup the optimized router call
     vm.startPrank(swapSenderAddress);
     IERC20(USDC).approve(routerAddr, 100_000);
-    uint256 startingBalance = IERC20(UNI).balanceOf(swapSenderAddress);
+    uint256 startingUNIBalance = IERC20(UNI).balanceOf(swapSenderAddress);
+    uint256 startingUSDCBalance = IERC20(USDC).balanceOf(swapSenderAddress);
     assertEq(startingBalance, 0, "Starting balance is incorrect");
 
     // Optimized router call
@@ -107,12 +106,21 @@ contract Fallback is V4RouterTest {
     assertTrue(ok, "Swap failed");
 
     // Compare balance to native aggregation router call
+
     uint256 endingBalance = IERC20(UNI).balanceOf(swapSenderAddress);
-    uint256 nativeEndingBalance = helper_nativeSwap(desc, data, snapshotId);
+    vm.revertTo(snapshotId);
+    uint256 nativeEndingUNIBalance = helper_nativeSwap(desc, data);
+    uint256 nativeEndingUSDCBalance = IERC20(USDC).balanceOf(swapSenderAddress);
+
     assertEq(
-      endingBalance,
-      nativeEndingBalance,
-      "Ending balance does not match the balance when calling 1inch directly"
+      endingUNIBalance,
+      nativeEndingUNIBalance,
+      "Ending UNI balance does not match the balance when calling 1inch directly"
+    );
+    assertEq(
+      endingUSDCBalance,
+      nativeEndingUSDCBalance,
+      "Ending USDC balance does not match the balance when calling 1inch directly"
     );
   }
 

@@ -103,8 +103,7 @@ contract Fallback is V5RouterTest {
     vm.startPrank(swapSenderAddress);
     IERC20(USDC).approve(routerAddr, 100_000);
     uint256 startingUNIBalance = IERC20(UNI).balanceOf(swapSenderAddress);
-    uint256 startingUSDCBalance = IERC20(USDC).balanceOf(swapSenderAddress);
-    assertEq(startingBalance, 0, "Starting balance is not 0");
+    assertEq(startingUNIBalance, 0, "Starting balance is not 0");
 
     // Optimized router call
     (bool ok,) = payable(routerAddr).call(abi.encode(UNI, 100_000, desc.minReturnAmount, data, 0));
@@ -136,16 +135,23 @@ contract Fallback is V5RouterTest {
 
     vm.startPrank(swapSenderAddress);
     IERC20(USDC).approve(routerAddr, 10_000_000);
+    uint256 startingBalance = IERC20(USDC).balanceOf(swapSenderAddress);
     (bool ok,) =
       payable(routerAddr).call(abi.encode(UNI, 10_000_000, desc.minReturnAmount, data, 0));
+    uint256 endingBalance = IERC20(USDC).balanceOf(swapSenderAddress);
+
     assertTrue(!ok, "Swap succeeded");
+    assertEq(startingBalance, endingBalance, "Funds were held by the router contract");
   }
 
   function testFork_RevertIf_ZeroAddress() public {
     (IV5AggregationRouter.SwapDescription memory desc,, bytes memory data) = helper_apiParams();
     IERC20(USDC).approve(routerAddr, 250_000);
+    uint256 startingBalance = IERC20(USDC).balanceOf(swapSenderAddress);
     (bool ok,) =
       payable(routerAddr).call(abi.encode(address(0), 250_000, desc.minReturnAmount, data, 0));
+    uint256 endingBalance = IERC20(USDC).balanceOf(swapSenderAddress);
     assertTrue(!ok, "Swap succeeded");
+    assertEq(startingBalance, endingBalance, "Funds were held by the router contract");
   }
 }

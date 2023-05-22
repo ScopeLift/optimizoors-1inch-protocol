@@ -65,10 +65,10 @@ contract Fallback is V4RouterTest {
     routerAddr = factory.computeAddress(RouterFactory.RouterType.V4AggregationRouter, USDC);
   }
 
-  function helper_nativeSwap(
-    IV4AggregationRouter.SwapDescription memory desc,
-    bytes memory data,
-  ) public returns (uint256) {
+  function helper_nativeSwap(IV4AggregationRouter.SwapDescription memory desc, bytes memory data)
+    public
+    returns (uint256)
+  {
     v4AggregationRouter.swap(v4AggregationExecutor, desc, data);
     return IERC20(UNI).balanceOf(swapSenderAddress);
   }
@@ -90,15 +90,14 @@ contract Fallback is V4RouterTest {
     return (desc, data);
   }
 
-  function testFork_SwapUSDCForUni() public {
+  function testFork_SwapUsdcForUni() public {
     uint256 snapshotId = vm.snapshot();
     (IV4AggregationRouter.SwapDescription memory desc, bytes memory data) = helper_apiParams();
     // Setup the optimized router call
     vm.startPrank(swapSenderAddress);
     IERC20(USDC).approve(routerAddr, 100_000);
     uint256 startingUNIBalance = IERC20(UNI).balanceOf(swapSenderAddress);
-    uint256 startingUSDCBalance = IERC20(USDC).balanceOf(swapSenderAddress);
-    assertEq(startingBalance, 0, "Starting balance is incorrect");
+    assertEq(startingUNIBalance, 0, "Starting balance is incorrect");
 
     // Optimized router call
     (bool ok,) = payable(routerAddr).call(abi.encode(UNI, 100_000, desc.minReturnAmount, data, 0));
@@ -107,7 +106,8 @@ contract Fallback is V4RouterTest {
 
     // Compare balance to native aggregation router call
 
-    uint256 endingBalance = IERC20(UNI).balanceOf(swapSenderAddress);
+    uint256 endingUNIBalance = IERC20(UNI).balanceOf(swapSenderAddress);
+    uint256 endingUSDCBalance = IERC20(USDC).balanceOf(swapSenderAddress);
     vm.revertTo(snapshotId);
     uint256 nativeEndingUNIBalance = helper_nativeSwap(desc, data);
     uint256 nativeEndingUSDCBalance = IERC20(USDC).balanceOf(swapSenderAddress);
@@ -129,16 +129,24 @@ contract Fallback is V4RouterTest {
 
     vm.startPrank(swapSenderAddress);
     IERC20(USDC).approve(routerAddr, 10_000_000);
+    uint256 startingBalance = IERC20(USDC).balanceOf(swapSenderAddress);
     (bool ok,) =
       payable(routerAddr).call(abi.encode(UNI, 10_000_000, desc.minReturnAmount, data, 0));
+    uint256 endingBalance = IERC20(USDC).balanceOf(swapSenderAddress);
+
     assertTrue(!ok, "Swap succeeded");
+    assertEq(startingBalance, endingBalance, "Funds were held by the router contract");
   }
 
   function testFork_RevertIf_ZeroAddress() public {
     (IV4AggregationRouter.SwapDescription memory desc, bytes memory data) = helper_apiParams();
     IERC20(USDC).approve(routerAddr, 250_000);
+    uint256 startingBalance = IERC20(USDC).balanceOf(swapSenderAddress);
     (bool ok,) =
       payable(routerAddr).call(abi.encode(address(0), 250_000, desc.minReturnAmount, data, 0));
+    uint256 endingBalance = IERC20(USDC).balanceOf(swapSenderAddress);
+
     assertTrue(!ok, "Swap succeeded");
+    assertEq(startingBalance, endingBalance, "Funds were held by the router contract");
   }
 }

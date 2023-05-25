@@ -9,10 +9,10 @@ import {IV4AggregationRouter} from "src/interfaces/IV4AggregationRouter.sol";
 import {OneInchContracts} from "test/OneInchContracts.sol";
 import "forge-std/console.sol";
 
-// A script to get benchmarks for 1inch's V4 and V5 router against the optimized routers. Due to 1inch
-// requiring their api be used to generate the data parameter the benchmarks are tied to a specific
-// wallet. When rerunning these benchmrks tt is recommended to regenerate the v4 and v5 data params
-// with a new wallet address using the api calls below.
+// A script to get benchmarks for 1inch's V4 and V5 router against the optimized routers. Due to
+// 1inch requiring their api be used to generate the data parameter the benchmarks are tied to a
+// specific wallet. When rerunning these benchmrks tt is recommended to regenerate the v4 and v5
+// data params with a new wallet address using the api calls below.
 contract Benchmark is Script, OneInchContracts {
   using stdJson for string;
 

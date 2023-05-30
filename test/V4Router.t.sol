@@ -9,6 +9,7 @@ import {IV4AggregationRouter} from "src/interfaces/IV4AggregationRouter.sol";
 import {RouterFactory} from "src/RouterFactory.sol";
 import {V4Router} from "src/V4Router.sol";
 import {OneInchContracts} from "test/OneInchContracts.sol";
+import "forge-std/console2.sol";
 
 contract V4RouterTest is Test, OneInchContracts {}
 
@@ -65,6 +66,14 @@ contract Fallback is V4RouterTest {
     routerAddr = factory.computeAddress(RouterFactory.RouterType.V4AggregationRouter, USDC);
   }
 
+  function encodeArgs(uint256 amount, uint256 minReturnAmount) internal pure returns (uint192) {
+   console2.logUint(amount);
+   console2.logUint(minReturnAmount);
+   console2.logUint(uint96(minReturnAmount));
+   console2.logUint(uint96(amount));
+    return (uint192(uint96(amount)) << 96) | uint192(uint96(minReturnAmount));
+  }
+
   function helper_nativeSwap(IV4AggregationRouter.SwapDescription memory desc, bytes memory data)
     public
     returns (uint256)
@@ -100,7 +109,7 @@ contract Fallback is V4RouterTest {
     assertEq(startingUNIBalance, 0, "Starting balance is incorrect");
 
     // Optimized router call
-    (bool ok,) = payable(routerAddr).call(abi.encode(UNI, 100_000, desc.minReturnAmount, data, 0));
+    (bool ok,) = payable(routerAddr).call(abi.encode(UNI, encodeArgs(100_000, desc.minReturnAmount), data, 0));
 
     assertTrue(ok, "Swap failed");
 
@@ -131,7 +140,7 @@ contract Fallback is V4RouterTest {
     IERC20(USDC).approve(routerAddr, 10_000_000);
     uint256 startingBalance = IERC20(USDC).balanceOf(swapSenderAddress);
     (bool ok,) =
-      payable(routerAddr).call(abi.encode(UNI, 10_000_000, desc.minReturnAmount, data, 0));
+      payable(routerAddr).call(abi.encode(UNI, encodeArgs(10_000_000, desc.minReturnAmount), data, 0));
     uint256 endingBalance = IERC20(USDC).balanceOf(swapSenderAddress);
 
     assertTrue(!ok, "Swap succeeded");
@@ -143,7 +152,7 @@ contract Fallback is V4RouterTest {
     IERC20(USDC).approve(routerAddr, 250_000);
     uint256 startingBalance = IERC20(USDC).balanceOf(swapSenderAddress);
     (bool ok,) =
-      payable(routerAddr).call(abi.encode(address(0), 250_000, desc.minReturnAmount, data, 0));
+      payable(routerAddr).call(abi.encode(address(0), encodeArgs(250_000, desc.minReturnAmount), data, 0));
     uint256 endingBalance = IERC20(USDC).balanceOf(swapSenderAddress);
 
     assertTrue(!ok, "Swap succeeded");

@@ -7,11 +7,11 @@ import {Script, stdJson} from "forge-std/Script.sol";
 import {IV5AggregationRouter} from "src/interfaces/IV5AggregationRouter.sol";
 import {IV4AggregationRouter} from "src/interfaces/IV4AggregationRouter.sol";
 import {OneInchContracts} from "test/OneInchContracts.sol";
-import "forge-std/console.sol";
+import "forge-std/console2.sol";
 
 // A script to get benchmarks for 1inch's V4 and V5 router against the optimized routers. Due to
 // 1inch requiring their api be used to generate the data parameter the benchmarks are tied to a
-// specific wallet. When rerunning these benchmrks tt is recommended to regenerate the v4 and v5
+// specific wallet. When rerunning these benchmrks it is recommended to regenerate the v4 and v5
 // data params with a new wallet address using the api calls below.
 contract Benchmark is Script, OneInchContracts {
   using stdJson for string;
@@ -33,8 +33,8 @@ contract Benchmark is Script, OneInchContracts {
     require(block.chainid == 10, "script can only be run on optimism");
     string memory file = "broadcast/Deploy.s.sol/10/run-latest.json";
     string memory json = vm.readFile(file);
-    address v5Rtr = json.readAddress(".transactions[1].additionalContracts[0].address");
 
+    address v5Rtr = json.readAddress(".transactions[1].additionalContracts[0].address");
     address v4Rtr = json.readAddress(".transactions[2].additionalContracts[0].address");
 
     // ===========================

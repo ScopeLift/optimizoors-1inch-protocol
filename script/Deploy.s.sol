@@ -12,11 +12,11 @@ contract Deploy is Script, OneInchContracts {
     // Deploy the optimized router factory
     vm.broadcast();
     RouterFactory factory = new RouterFactory(
-            v5AggregationExecutor,
-            v5AggregationRouter,
-            v4AggregationExecutor,
-            v4AggregationRouter
-        );
+      v5AggregationExecutor,
+      v5AggregationRouter,
+      v4AggregationExecutor,
+      v4AggregationRouter
+    );
 
     // Deploy the optimized router for V5Aggregation
     vm.broadcast();

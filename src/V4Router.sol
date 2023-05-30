@@ -43,17 +43,9 @@ contract V4Router is AggregationV4BaseRouter {
   fallback() external payable {
     (address dstToken, uint192 args, bytes memory data, uint256 flags) =
       abi.decode(msg.data, (address, uint192, bytes, uint256));
-	// combind amount and minReturn amount into a unit256
-	// convert uint96 to uint256
-	// minReturnAmount
-	// amount
-	// amount is first
+
 	uint96 amount = _extractAmount(args);
 	uint96 minReturnAmount = _extractMinReturnAmount(args);
-	console2.logBytes("Function");
-	console2.logUint(args);
-	console2.logUint(amount);
-	console2.logUint(minReturnAmount);
     IERC20(TOKEN).transferFrom(msg.sender, address(this), amount);
     AGGREGATION_ROUTER.swap(
       AGGREGATION_EXECUTOR,

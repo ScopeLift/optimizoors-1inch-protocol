@@ -7,7 +7,6 @@ import {Script, stdJson} from "forge-std/Script.sol";
 import {IV5AggregationRouter} from "src/interfaces/IV5AggregationRouter.sol";
 import {IV4AggregationRouter} from "src/interfaces/IV4AggregationRouter.sol";
 import {OneInchContracts} from "test/OneInchContracts.sol";
-import "forge-std/console2.sol";
 
 // A script to get benchmarks for 1inch's V4 and V5 router against the optimized routers. Due to
 // 1inch requiring their api be used to generate the data parameter the benchmarks are tied to a

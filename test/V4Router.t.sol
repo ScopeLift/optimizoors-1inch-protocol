@@ -9,7 +9,6 @@ import {IV4AggregationRouter} from "src/interfaces/IV4AggregationRouter.sol";
 import {RouterFactory} from "src/RouterFactory.sol";
 import {V4Router} from "src/V4Router.sol";
 import {OneInchContracts} from "test/OneInchContracts.sol";
-import "forge-std/console2.sol";
 
 contract V4RouterTestHarness is V4Router {
   constructor(
@@ -17,6 +16,7 @@ contract V4RouterTestHarness is V4Router {
     IV4AggregationExecutor aggregationExecutor,
     address token
   ) V4Router(aggregationRouter, aggregationExecutor, token) {}
+
   function extractAmount(uint192 args) external pure returns (uint96) {
     return _extractAmount(args);
   }
@@ -64,7 +64,7 @@ contract _ExtractMinReturnAmount is V4RouterTest {
     vm.createSelectFork(vm.rpcUrl("optimism"), 95_544_472);
   }
 
-  function testFuzz_SuccessfullyExtractMinReturnAmount(uint96 amount, uint96 minReturnAmount)
+  function testForkFuzz_SuccessfullyExtractMinReturnAmount(uint96 amount, uint96 minReturnAmount)
     public
   {
     V4RouterTestHarness harness = new V4RouterTestHarness(
@@ -72,10 +72,7 @@ contract _ExtractMinReturnAmount is V4RouterTest {
             v4AggregationExecutor,
             USDC
     );
-    assertEq(
-      harness.extractMinReturnAmount(encodeArgs(amount, minReturnAmount)), minReturnAmount
-    );
-
+    assertEq(harness.extractMinReturnAmount(encodeArgs(amount, minReturnAmount)), minReturnAmount);
   }
 }
 
@@ -84,18 +81,13 @@ contract _ExtractAmount is V4RouterTest {
     vm.createSelectFork(vm.rpcUrl("optimism"), 95_544_472);
   }
 
-  function testForkFuzz_SuccessfullyExtractAmount(uint96 amount, uint96 minReturnAmount)
-    public
-  {
+  function testForkFuzz_SuccessfullyExtractAmount(uint96 amount, uint96 minReturnAmount) public {
     V4RouterTestHarness harness = new V4RouterTestHarness(
             v4AggregationRouter,
             v4AggregationExecutor,
             USDC
     );
-    assertEq(
-      harness.extractAmount(encodeArgs(amount, minReturnAmount)), amount
-    );
-
+    assertEq(harness.extractAmount(encodeArgs(amount, minReturnAmount)), amount);
   }
 
   function testForkFuzz_SuccessfullyReencodeArgs(uint192 args) public {
@@ -105,11 +97,8 @@ contract _ExtractAmount is V4RouterTest {
       USDC
     );
     assertEq(encodeArgs(harness.extractAmount(args), harness.extractMinReturnAmount(args)), args);
-
   }
 }
-
-
 
 contract Fallback is V4RouterTest {
   RouterFactory factory;
@@ -172,7 +161,8 @@ contract Fallback is V4RouterTest {
     assertEq(startingUNIBalance, 0, "Starting balance is incorrect");
 
     // Optimized router call
-    (bool ok,) = payable(routerAddr).call(abi.encode(UNI, encodeArgs(100_000, desc.minReturnAmount), data, 0));
+    (bool ok,) =
+      payable(routerAddr).call(abi.encode(UNI, encodeArgs(100_000, desc.minReturnAmount), data, 0));
 
     assertTrue(ok, "Swap failed");
 
@@ -202,8 +192,9 @@ contract Fallback is V4RouterTest {
     vm.startPrank(swapSenderAddress);
     IERC20(USDC).approve(routerAddr, 10_000_000);
     uint256 startingBalance = IERC20(USDC).balanceOf(swapSenderAddress);
-    (bool ok,) =
-      payable(routerAddr).call(abi.encode(UNI, encodeArgs(10_000_000, desc.minReturnAmount), data, 0));
+    (bool ok,) = payable(routerAddr).call(
+      abi.encode(UNI, encodeArgs(10_000_000, desc.minReturnAmount), data, 0)
+    );
     uint256 endingBalance = IERC20(USDC).balanceOf(swapSenderAddress);
 
     assertTrue(!ok, "Swap succeeded");
@@ -214,8 +205,9 @@ contract Fallback is V4RouterTest {
     (IV4AggregationRouter.SwapDescription memory desc, bytes memory data) = helper_apiParams();
     IERC20(USDC).approve(routerAddr, 250_000);
     uint256 startingBalance = IERC20(USDC).balanceOf(swapSenderAddress);
-    (bool ok,) =
-      payable(routerAddr).call(abi.encode(address(0), encodeArgs(250_000, desc.minReturnAmount), data, 0));
+    (bool ok,) = payable(routerAddr).call(
+      abi.encode(address(0), encodeArgs(250_000, desc.minReturnAmount), data, 0)
+    );
     uint256 endingBalance = IERC20(USDC).balanceOf(swapSenderAddress);
 
     assertTrue(!ok, "Swap succeeded");

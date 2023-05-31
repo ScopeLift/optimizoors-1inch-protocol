@@ -6,7 +6,6 @@ import {IERC20} from "openzeppelin-contracts/contracts/token/ERC20/IERC20.sol";
 import {IV4AggregationExecutor} from "src/interfaces/IV4AggregationExecutor.sol";
 import {IV4AggregationRouter} from "src/interfaces/IV4AggregationRouter.sol";
 import {AggregationV4BaseRouter} from "src/AggregationBaseRouter.sol";
-import "forge-std/console2.sol";
 
 /// @notice An optimized router to swap tokens using 1inch's v4 aggregation router.
 contract V4Router is AggregationV4BaseRouter {
@@ -21,31 +20,30 @@ contract V4Router is AggregationV4BaseRouter {
   // TODO: Update to handle receiving ETH
   receive() external payable {}
 
-  /// @dev Returns the `sqrtPriceLimitX96` from a `uint168`.
-  /// @param args A `uint168` that contains both the `funcId` and the `sqrtPriceLimitX96` needed to
-  /// open or close a position.
+  /// @dev Returns the `minReturnAmount` from a `uint96`.
+  /// @param args A `uint192` that contains both the `minReturnAmount` and `amount` needed to swap a
+  /// token.
   function _extractMinReturnAmount(uint192 args) internal pure returns (uint96) {
     uint168 mask = (1 << 96) - 1;
     return uint96(args & mask);
   }
 
-  /// @dev Returns the `sqrtPriceLimitX96` from a `uint168`.
-  /// @param args A `uint168` that contains both the `funcId` and the `sqrtPriceLimitX96` needed to
-  /// open or close a position.
+  /// @dev Returns the `amount` from a `uint96`.
+  /// @param args A `uint192` that contains both the `minReturnAmount` and `amount` needed to swap a
+  /// token.
+
   function _extractAmount(uint192 args) internal pure returns (uint96) {
     uint192 firstNinetySixBitMask = ((1 << 96) - 1) << 96;
     return uint96((args & firstNinetySixBitMask) >> 96);
   }
-
-
 
   // Flags match specific constant masks. There is no documentation on these.
   fallback() external payable {
     (address dstToken, uint192 args, bytes memory data, uint256 flags) =
       abi.decode(msg.data, (address, uint192, bytes, uint256));
 
-	uint96 amount = _extractAmount(args);
-	uint96 minReturnAmount = _extractMinReturnAmount(args);
+    uint96 amount = _extractAmount(args);
+    uint96 minReturnAmount = _extractMinReturnAmount(args);
     IERC20(TOKEN).transferFrom(msg.sender, address(this), amount);
     AGGREGATION_ROUTER.swap(
       AGGREGATION_EXECUTOR,

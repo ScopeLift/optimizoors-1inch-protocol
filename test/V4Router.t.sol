@@ -10,27 +10,7 @@ import {RouterFactory} from "src/RouterFactory.sol";
 import {V4Router} from "src/V4Router.sol";
 import {OneInchContracts} from "test/OneInchContracts.sol";
 
-contract V4RouterTestHarness is V4Router {
-  constructor(
-    IV4AggregationRouter aggregationRouter,
-    IV4AggregationExecutor aggregationExecutor,
-    address token
-  ) V4Router(aggregationRouter, aggregationExecutor, token) {}
-
-  function extractAmount(uint192 args) external pure returns (uint96) {
-    return _extractAmount(args);
-  }
-
-  function extractMinReturnAmount(uint192 args) external pure returns (uint96) {
-    return _extractMinReturnAmount(args);
-  }
-}
-
-contract V4RouterTest is Test, OneInchContracts {
-  function encodeArgs(uint256 amount, uint256 minReturnAmount) internal pure returns (uint192) {
-    return (uint192(uint96(amount)) << 96) | uint192(uint96(minReturnAmount));
-  }
-}
+contract V4RouterTest is Test, OneInchContracts {}
 
 contract Constructor is V4RouterTest {
   function setUp() public {
@@ -56,47 +36,6 @@ contract Constructor is V4RouterTest {
     assertEq(
       router.SOURCE_RECEIVER(), address(v4AggregationExecutor), "SOURCE_RECEIVER not set correctly"
     );
-  }
-}
-
-contract _ExtractMinReturnAmount is V4RouterTest {
-  function setUp() public {
-    vm.createSelectFork(vm.rpcUrl("optimism"), 95_544_472);
-  }
-
-  function testForkFuzz_SuccessfullyExtractMinReturnAmount(uint96 amount, uint96 minReturnAmount)
-    public
-  {
-    V4RouterTestHarness harness = new V4RouterTestHarness(
-            v4AggregationRouter,
-            v4AggregationExecutor,
-            USDC
-    );
-    assertEq(harness.extractMinReturnAmount(encodeArgs(amount, minReturnAmount)), minReturnAmount);
-  }
-}
-
-contract _ExtractAmount is V4RouterTest {
-  function setUp() public {
-    vm.createSelectFork(vm.rpcUrl("optimism"), 95_544_472);
-  }
-
-  function testForkFuzz_SuccessfullyExtractAmount(uint96 amount, uint96 minReturnAmount) public {
-    V4RouterTestHarness harness = new V4RouterTestHarness(
-            v4AggregationRouter,
-            v4AggregationExecutor,
-            USDC
-    );
-    assertEq(harness.extractAmount(encodeArgs(amount, minReturnAmount)), amount);
-  }
-
-  function testForkFuzz_SuccessfullyReencodeArgs(uint192 args) public {
-    V4RouterTestHarness harness = new V4RouterTestHarness(
-      v4AggregationRouter,
-      v4AggregationExecutor,
-      USDC
-    );
-    assertEq(encodeArgs(harness.extractAmount(args), harness.extractMinReturnAmount(args)), args);
   }
 }
 

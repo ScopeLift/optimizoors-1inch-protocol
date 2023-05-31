@@ -23,4 +23,8 @@ contract OneInchContracts {
   function returnSliceBytes(bytes calldata d) public pure returns (bytes memory) {
     return d[4:];
   }
+
+  function encodeArgs(uint256 amount, uint256 minReturnAmount) internal pure returns (uint192) {
+    return (uint192(uint96(amount)) << 96) | uint192(uint96(minReturnAmount));
+  }
 }

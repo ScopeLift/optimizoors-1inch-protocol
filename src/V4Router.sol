@@ -1,14 +1,15 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.0;
+pragma solidity ^0.8.0;
 
 import {IERC20} from "openzeppelin-contracts/contracts/token/ERC20/IERC20.sol";
 
 import {IV4AggregationExecutor} from "src/interfaces/IV4AggregationExecutor.sol";
 import {IV4AggregationRouter} from "src/interfaces/IV4AggregationRouter.sol";
 import {AggregationV4BaseRouter} from "src/AggregationBaseRouter.sol";
+import {DecodeArgs} from "src/DecodeArgs.sol";
 
 /// @notice An optimized router to swap tokens using 1inch's v4 aggregation router.
-contract V4Router is AggregationV4BaseRouter {
+contract V4Router is AggregationV4BaseRouter, DecodeArgs {
   constructor(
     IV4AggregationRouter aggregationRouter,
     IV4AggregationExecutor aggregationExecutor,
@@ -19,23 +20,6 @@ contract V4Router is AggregationV4BaseRouter {
 
   // TODO: Update to handle receiving ETH
   receive() external payable {}
-
-  /// @dev Returns the `minReturnAmount` from a `uint96`.
-  /// @param args A `uint192` that contains both the `minReturnAmount` and `amount` needed to swap a
-  /// token.
-  function _extractMinReturnAmount(uint192 args) internal pure returns (uint96) {
-    uint168 mask = (1 << 96) - 1;
-    return uint96(args & mask);
-  }
-
-  /// @dev Returns the `amount` from a `uint96`.
-  /// @param args A `uint192` that contains both the `minReturnAmount` and `amount` needed to swap a
-  /// token.
-
-  function _extractAmount(uint192 args) internal pure returns (uint96) {
-    uint192 firstNinetySixBitMask = ((1 << 96) - 1) << 96;
-    return uint96((args & firstNinetySixBitMask) >> 96);
-  }
 
   // Flags match specific constant masks. There is no documentation on these.
   fallback() external payable {

@@ -6,10 +6,9 @@ import {IERC20} from "openzeppelin-contracts/contracts/token/ERC20/IERC20.sol";
 import {IV5AggregationExecutor} from "src/interfaces/IV5AggregationExecutor.sol";
 import {IV5AggregationRouter} from "src/interfaces/IV5AggregationRouter.sol";
 import {AggregationV5BaseRouter} from "src/AggregationBaseRouter.sol";
-import {DecodeArgs} from "src/DecodeArgs.sol";
 
 /// @notice A router to swap tokens using 1inch's v5 aggregation router.
-contract V5Router is AggregationV5BaseRouter, DecodeArgs {
+contract V5Router is AggregationV5BaseRouter {
   constructor(
     IV5AggregationRouter aggregationRouter,
     IV5AggregationExecutor aggregationExecutor,
@@ -23,11 +22,12 @@ contract V5Router is AggregationV5BaseRouter, DecodeArgs {
 
   // Flags match specific constant masks. There is no documentation on these.
   fallback() external payable {
-    (address dstToken, uint192 args, bytes memory data, uint256 flags) =
-      abi.decode(msg.data, (address, uint192, bytes, uint256));
+    address dstToken = address(bytes20(msg.data[0:20]));
+    uint256 amount = uint256(uint96(bytes12(msg.data[20:32])));
+    uint256 minReturnAmount = uint256(uint96(bytes12(msg.data[32:44])));
+    uint256 flags = uint256(bytes32(msg.data[44:76]));
+    bytes memory data = bytes(msg.data[76:msg.data.length]);
 
-    uint96 amount = _extractAmount(args);
-    uint96 minReturnAmount = _extractMinReturnAmount(args);
     IERC20(TOKEN).transferFrom(msg.sender, address(this), amount);
     AGGREGATION_ROUTER.swap(
       AGGREGATION_EXECUTOR,

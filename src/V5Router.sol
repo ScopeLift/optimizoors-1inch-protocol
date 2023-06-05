@@ -9,6 +9,9 @@ import {AggregationV5BaseRouter} from "src/AggregationBaseRouter.sol";
 
 /// @notice A router to swap tokens using 1inch's v5 aggregation router.
 contract V5Router is AggregationV5BaseRouter {
+  /// @dev Thrown when a function is not supported.
+  error UnsupportedFunction();
+
   constructor(
     IV5AggregationRouter aggregationRouter,
     IV5AggregationExecutor aggregationExecutor,
@@ -17,8 +20,9 @@ contract V5Router is AggregationV5BaseRouter {
     IERC20(token).approve(address(aggregationRouter), type(uint256).max);
   }
 
-  // TODO: Update to handle receiving ETH
-  receive() external payable {}
+  receive() external payable {
+    revert UnsupportedFunction();
+  }
 
   // Flags match specific constant masks. There is no documentation on these.
   fallback() external payable {

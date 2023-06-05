@@ -39,6 +39,29 @@ contract Constructor is V4RouterTest {
   }
 }
 
+contract Receive is V4RouterTest {
+  function setUp() public {
+    vm.createSelectFork(vm.rpcUrl("optimism"), 95_544_472);
+  }
+
+  function testFork_RevertIf_Called(uint256 amount) public {
+    V4Router router = new V4Router(
+       v4AggregationRouter,
+       v4AggregationExecutor,
+       USDC
+    );
+
+    vm.deal(address(this), amount);
+
+    vm.expectRevert(bytes(""));
+    (bool ok,) = payable(address(router)).call{value: amount}("");
+
+    assertTrue(!ok, "Call did not revert");
+    assertEq(address(this).balance, amount, "Router did not return all funds");
+    assertEq(address(router).balance, 0, "Router kept some funds");
+  }
+}
+
 contract Fallback is V4RouterTest {
   RouterFactory factory;
   // The address that is initiating the swap on 1inch.

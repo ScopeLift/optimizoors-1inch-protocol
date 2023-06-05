@@ -12,10 +12,10 @@
 
 ## About
 
-1inch optimizoors provides a calldata-optimized router for [1inch Networks](https://1inch.io/) 
-V4 and V5 aggregation routers, providing significant gas savings to users. This
-work was funded by an Ethereum Foundation [grant](https://blog.ethereum.org/2023/02/14/layer-2-grants-roundup).
-Read our [blog post](https://www.scopelift.co/blog/calldata-optimizooooors) to learn 
+1inch optimizoors provides calldata-optimized routers for [1inch Network](https://1inch.io/),
+providing significant gas savings when deployed on Optimism or Arbitrum. There are 
+two optimized routers. One that wraps 1inch's V4 Aggregation router and another
+that wraps their V5 Aggregation router. This work was funded by an Ethereum Foundation [grant](https://blog.ethereum.org/2023/02/14/layer-2-grants-roundup). Read our [blog post](https://www.scopelift.co/blog/calldata-optimizooooors) to learn 
 more about how we optimize protocols on L2.
 
 ## Development
@@ -37,7 +37,7 @@ forge build
 
 ## How it works
 
-We have a router factory which deploys calldata optimized AggrationRouters. Currently
+We have a router factory which deploys calldata optimized AggregationRouters. Currently
 we have two types of optimized routers. One for the V5 aggregation router and another
  for the v4 aggregation router.
 

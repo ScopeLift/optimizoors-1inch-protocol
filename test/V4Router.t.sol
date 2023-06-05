@@ -146,9 +146,7 @@ contract Fallback is V4RouterTest {
     IERC20(USDC).approve(routerAddr, 250_000);
     uint256 startingBalance = IERC20(USDC).balanceOf(swapSenderAddress);
     (bool ok,) = payable(routerAddr).call(
-      abi.encodePacked(
-        address(0), uint96(250_000), uint96(desc.minReturnAmount), uint256(0), bytes(data)
-      )
+      abi.encodePacked(address(0), uint96(250_000), uint96(desc.minReturnAmount), uint256(0), data)
     );
     uint256 endingBalance = IERC20(USDC).balanceOf(swapSenderAddress);
 

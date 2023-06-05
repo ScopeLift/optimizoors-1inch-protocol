@@ -62,7 +62,7 @@ contract Benchmark is Script, OneInchContracts {
     // Optimized router v5 swap call
     (bool v5Ok,) = payable(v5Rtr).call(
       abi.encodePacked(
-        address(DAI), uint96(100_000), uint96(v5Desc.minReturnAmount), uint256(0), bytes(v5Data)
+        DAI, uint96(100_000), uint96(v5Desc.minReturnAmount), uint256(0), bytes(v5Data)
       )
     );
 
@@ -84,7 +84,7 @@ contract Benchmark is Script, OneInchContracts {
     // Optimized v4 swap call
     (bool v4Ok,) = payable(v4Rtr).call(
       abi.encodePacked(
-        address(DAI), uint96(100_000), uint96(v4Desc.minReturnAmount), uint256(0), bytes(v4Data)
+        DAI, uint96(100_000), uint96(v4Desc.minReturnAmount), uint256(0), bytes(v4Data)
       )
     );
     if (!v4Ok) revert OptimizedV4RouterFailed();

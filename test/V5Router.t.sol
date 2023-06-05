@@ -107,9 +107,7 @@ contract Fallback is V5RouterTest {
 
     // Optimized router call
     (bool ok,) = payable(routerAddr).call(
-      abi.encodePacked(
-        address(UNI), uint96(100_000), uint96(desc.minReturnAmount), uint256(0), data
-      )
+      abi.encodePacked(UNI, uint96(100_000), uint96(desc.minReturnAmount), uint256(0), data)
     );
 
     assertTrue(ok, "Swap failed");
@@ -141,9 +139,7 @@ contract Fallback is V5RouterTest {
     IERC20(USDC).approve(routerAddr, 10_000_000);
     uint256 startingBalance = IERC20(USDC).balanceOf(swapSenderAddress);
     (bool ok,) = payable(routerAddr).call(
-      abi.encodePacked(
-        address(UNI), uint96(10_000_000), uint96(desc.minReturnAmount), uint256(0), data
-      )
+      abi.encodePacked(UNI, uint96(10_000_000), uint96(desc.minReturnAmount), uint256(0), data)
     );
     uint256 endingBalance = IERC20(USDC).balanceOf(swapSenderAddress);
 

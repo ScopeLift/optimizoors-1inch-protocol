@@ -100,7 +100,9 @@ contract Fallback is V4RouterTest {
     assertEq(startingUNIBalance, 0, "Starting balance is incorrect");
 
     // Optimized router call
-    (bool ok,) = payable(routerAddr).call(abi.encode(UNI, 100_000, desc.minReturnAmount, data, 0));
+    (bool ok,) = payable(routerAddr).call(
+      abi.encodePacked(UNI, uint96(100_000), uint96(desc.minReturnAmount), uint8(0), data)
+    );
 
     assertTrue(ok, "Swap failed");
 
@@ -130,8 +132,9 @@ contract Fallback is V4RouterTest {
     vm.startPrank(swapSenderAddress);
     IERC20(USDC).approve(routerAddr, 10_000_000);
     uint256 startingBalance = IERC20(USDC).balanceOf(swapSenderAddress);
-    (bool ok,) =
-      payable(routerAddr).call(abi.encode(UNI, 10_000_000, desc.minReturnAmount, data, 0));
+    (bool ok,) = payable(routerAddr).call(
+      abi.encodePacked(UNI, uint96(10_000_000), uint96(desc.minReturnAmount), uint8(0), data)
+    );
     uint256 endingBalance = IERC20(USDC).balanceOf(swapSenderAddress);
 
     assertTrue(!ok, "Swap succeeded");
@@ -142,8 +145,9 @@ contract Fallback is V4RouterTest {
     (IV4AggregationRouter.SwapDescription memory desc, bytes memory data) = helper_apiParams();
     IERC20(USDC).approve(routerAddr, 250_000);
     uint256 startingBalance = IERC20(USDC).balanceOf(swapSenderAddress);
-    (bool ok,) =
-      payable(routerAddr).call(abi.encode(address(0), 250_000, desc.minReturnAmount, data, 0));
+    (bool ok,) = payable(routerAddr).call(
+      abi.encodePacked(address(0), uint96(250_000), uint96(desc.minReturnAmount), uint8(0), data)
+    );
     uint256 endingBalance = IERC20(USDC).balanceOf(swapSenderAddress);
 
     assertTrue(!ok, "Swap succeeded");

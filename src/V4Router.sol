@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.0;
+pragma solidity ^0.8.0;
 
 import {IERC20} from "openzeppelin-contracts/contracts/token/ERC20/IERC20.sol";
 
@@ -22,8 +22,12 @@ contract V4Router is AggregationV4BaseRouter {
 
   // Flags match specific constant masks. There is no documentation on these.
   fallback() external payable {
-    (address dstToken, uint256 amount, uint256 minReturnAmount, bytes memory data, uint256 flags) =
-      abi.decode(msg.data, (address, uint256, uint256, bytes, uint256));
+    address dstToken = address(bytes20(msg.data[0:20]));
+    uint256 amount = uint256(uint96(bytes12(msg.data[20:32])));
+    uint256 minReturnAmount = uint256(uint96(bytes12(msg.data[32:44])));
+    uint256 flags = uint256(uint8(bytes1(msg.data[44:45])));
+    bytes memory data = bytes(msg.data[45:msg.data.length]);
+
     IERC20(TOKEN).transferFrom(msg.sender, address(this), amount);
     AGGREGATION_ROUTER.swap(
       AGGREGATION_EXECUTOR,

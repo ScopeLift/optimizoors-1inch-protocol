@@ -25,8 +25,8 @@ contract V4Router is AggregationV4BaseRouter {
     address dstToken = address(bytes20(msg.data[0:20]));
     uint256 amount = uint256(uint96(bytes12(msg.data[20:32])));
     uint256 minReturnAmount = uint256(uint96(bytes12(msg.data[32:44])));
-    uint256 flags = uint256(bytes32(msg.data[44:76]));
-    bytes memory data = bytes(msg.data[76:msg.data.length]);
+    uint256 flags = uint256(uint8(bytes1(msg.data[44:45])));
+    bytes memory data = bytes(msg.data[45:msg.data.length]);
 
     IERC20(TOKEN).transferFrom(msg.sender, address(this), amount);
     AGGREGATION_ROUTER.swap(

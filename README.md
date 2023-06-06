@@ -36,7 +36,7 @@ forge build
 ## How it works
 
 We have a router factory which deploys calldata optimized `AggregationRouter` contracts. 
-Currently we have two types of optimized routers. One for the V5 aggregation router and another 
+Currently, we have two types of optimized routers. One for the V5 aggregation router and another 
 for the v4 aggregation router.
 
 There will be one deployed optimized router per sell token. For example if a user

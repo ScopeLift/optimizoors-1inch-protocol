@@ -6,8 +6,6 @@
 - [About](#about)
 - [Development](#development)
   - [Instructions](#instructions)
-  - [Contracts](docs/src/SUMMARY.md)
-  - [Addresses](#addresses)
 - [License](#license)
 
 ## About
@@ -34,11 +32,6 @@ forge test
 # Build smart contracts
 forge build
 ```
-
-| Name   |    Address      |
-|----------|:-------------:|
-| 1inch Router Factory | 0xDfb453656A14c8e9ad3F4095483CE3328977eb47 |
-
 
 ## How it works
 

@@ -37,7 +37,7 @@ forge build
 
 ### Contracts
 
-Documentation for the contracts can he found [here](src/docs/SUMMARY.md).
+Documentation for the contracts can he found [here](docs/src/SUMMARY.md).
 
 ### Addresses
 

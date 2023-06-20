@@ -6,7 +6,7 @@
 - [About](#about)
 - [Development](#development)
   - [Instructions](#instructions)
-  - [Contracts](docs/src/SUMMARY.md)
+  - [Contracts](#contracts)
   - [Addresses](#addresses)
 - [License](#license)
 
@@ -34,6 +34,10 @@ forge test
 # Build smart contracts
 forge build
 ```
+
+### Contracts
+
+Documentation for the contracts can he found [here](src/docs/SUMMARY.md).
 
 ### Addresses
 

@@ -41,9 +41,12 @@ Documentation for the contracts can he found [here](docs/src/SUMMARY.md).
 
 ### Addresses
 
-| Name   |    Address      |
-|----------|:-------------:|
-| 1inch Router Factory | 0xDfb453656A14c8e9ad3F4095483CE3328977eb47 |
+| Name   | Chain |    Address      |
+|----------|:-------:|:-------------:|
+| 1inch Router Factory | Optimism | 0xDfb453656A14c8e9ad3F4095483CE3328977eb47 |
+| 1inch Router Factory | Aribitrum | 0x8a33e6288d155aDB1d368838CB91E01d30C66eC1|
+
+
 
 
 ## How it works
